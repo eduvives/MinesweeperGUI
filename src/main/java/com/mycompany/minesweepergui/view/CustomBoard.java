@@ -17,9 +17,9 @@ public class CustomBoard extends javax.swing.JDialog {
     private MinesweeperPanel mainPanel;
     private Color originalBackgroundColor;
     private static final int MIN_ROWS = 8;
-    private static final int MAX_ROWS = 22;
+    private static final int MAX_ROWS = 100;
     private static final int MIN_COLS = 8;
-    private static final int MAX_COLS = 46;
+    private static final int MAX_COLS = 100;
     private static final int MIN_MINES = 1;
     private int maxMines;
     private boolean validRows = false;
@@ -32,17 +32,17 @@ public class CustomBoard extends javax.swing.JDialog {
     /**
      * Creates new form customBoard
      */
-    public CustomBoard(MinesweeperPanel mainPanel, int[] lastCustomBoardParams) {
+    public CustomBoard(MinesweeperPanel mainPanel, Integer[] previousCustomBoardParams) {
         super(mainPanel, "Custom Board", true);
         this.mainPanel = mainPanel;
         initComponents();
         rowsInfoLabel.setText("min " + MIN_ROWS + " - max " + MAX_ROWS);
         colsInfoLabel.setText("min " + MIN_COLS + " - max " + MAX_COLS);
         minesInfoLabel.setText("min ? - max ?");
-        if (lastCustomBoardParams != null) {
-            rowsField.setText(String.valueOf(lastCustomBoardParams[0]));
-            colsField.setText(String.valueOf(lastCustomBoardParams[1]));
-            minesField.setText(String.valueOf(lastCustomBoardParams[2]));
+        if (previousCustomBoardParams != null) {
+            rowsField.setText(String.valueOf(previousCustomBoardParams[0]));
+            colsField.setText(String.valueOf(previousCustomBoardParams[1]));
+            minesField.setText(String.valueOf(previousCustomBoardParams[2]));
             updateInfoLabelsRows();
             updateInfoLabelsCols();
             updateInfoLabelsMines();
@@ -113,11 +113,11 @@ public class CustomBoard extends javax.swing.JDialog {
 
         rowsInfoLabel.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         rowsInfoLabel.setForeground(new java.awt.Color(115, 115, 115));
-        rowsInfoLabel.setText("min 4 - max 22");
+        rowsInfoLabel.setText("min 8 - max 100");
 
         colsInfoLabel.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         colsInfoLabel.setForeground(new java.awt.Color(115, 115, 115));
-        colsInfoLabel.setText("min 4 - max 46");
+        colsInfoLabel.setText("min 8 - max 100");
 
         minesInfoLabel.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         minesInfoLabel.setForeground(new java.awt.Color(115, 115, 115));
@@ -193,15 +193,15 @@ public class CustomBoard extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
     
     private void rowsFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rowsFieldActionPerformed
-        // TODO add your handling code here:
+        acceptBtnActionPerformed(evt);
     }//GEN-LAST:event_rowsFieldActionPerformed
 
     private void colsFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colsFieldActionPerformed
-        // TODO add your handling code here:
+        acceptBtnActionPerformed(evt);
     }//GEN-LAST:event_colsFieldActionPerformed
 
     private void minesFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minesFieldActionPerformed
-        // TODO add your handling code here:
+        acceptBtnActionPerformed(evt);
     }//GEN-LAST:event_minesFieldActionPerformed
 
     private void acceptBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptBtnActionPerformed
@@ -288,6 +288,7 @@ public class CustomBoard extends javax.swing.JDialog {
                 updateRowsColsInfoLabelsMines();
             }
         } else {
+            validRows = false;
             rowsInfoLabel.setForeground(VALID_LABEL);
         }
     }
@@ -308,6 +309,7 @@ public class CustomBoard extends javax.swing.JDialog {
                 updateRowsColsInfoLabelsMines();
             }
         } else {
+            validCols = false;
             colsInfoLabel.setForeground(VALID_LABEL);
         }
     }
@@ -327,6 +329,7 @@ public class CustomBoard extends javax.swing.JDialog {
                 }               
             } 
         } else {
+            validMines = false;
             minesInfoLabel.setForeground(VALID_LABEL);
         }
     }
