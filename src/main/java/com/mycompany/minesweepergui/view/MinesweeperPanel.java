@@ -9,11 +9,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
@@ -25,8 +26,23 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     
     private Minesweeper game;
     private Square[][] allSquares;
-    public boolean gameStarted;
     GridLayout gameSquares = new GridLayout();
+    private boolean gameStarted;
+    private boolean firstMoveDone;
+    private int timerCount;
+    private static final int MAX_SECONDS = 999;
+    private Timer timer = null;
+    
+    private static final int EASY_ROWS = 8;
+    private static final int EASY_COLS = 8;
+    private static final int EASY_MINES = 10;
+    private static final int MEDIUM_ROWS = 16;
+    private static final int MEDIUM_COLS = 16;
+    private static final int MEDIUM_MINES = 40;
+    private static final int DIFFICULT_ROWS = 16;
+    private static final int DIFFICULT_COLS = 30;
+    private static final int DIFFICULT_MINES = 99;
+    private int[] lastCustomBoardParams = null;
     
     /**
      * Creates new form MinesweeperPanel
@@ -37,8 +53,10 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         gameBoard.setLayout(gameSquares);
         gameSquares.setHgap(0);
         gameSquares.setVgap(0);
-        gameReady(1, false);
+        newGame(cmbSelectDifficulty.getSelectedIndex());
         markedMines.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        timerLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        timerPanel.setVisible(false);
         setLocationRelativeTo(null);
         setResizable(false);
     }
@@ -52,20 +70,17 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        cmbSelectDifficulty = new javax.swing.JComboBox<>();
         gameBoard = new javax.swing.JPanel();
-        repeatBoardBtn = new javax.swing.JButton();
+        shortMenuPanel = new javax.swing.JPanel();
+        cmbSelectDifficulty = new javax.swing.JComboBox<>();
         markedMines = new javax.swing.JLabel();
         newBoardBtn = new javax.swing.JButton();
+        repeatBoardBtn = new javax.swing.JButton();
+        timerPanel = new javax.swing.JPanel();
+        timerLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        cmbSelectDifficulty.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Easy", "Medium", "Difficult" }));
-        cmbSelectDifficulty.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbSelectDifficultyActionPerformed(evt);
-            }
-        });
+        setMinimumSize(new java.awt.Dimension(404, 496));
 
         javax.swing.GroupLayout gameBoardLayout = new javax.swing.GroupLayout(gameBoard);
         gameBoard.setLayout(gameBoardLayout);
@@ -78,10 +93,13 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             .addGap(0, 346, Short.MAX_VALUE)
         );
 
-        repeatBoardBtn.setText("Repeat Game");
-        repeatBoardBtn.addActionListener(new java.awt.event.ActionListener() {
+        shortMenuPanel.setMinimumSize(new java.awt.Dimension(320, 79));
+
+        cmbSelectDifficulty.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Custom", "Easy", "Medium", "Difficult" }));
+        cmbSelectDifficulty.setSelectedIndex(1);
+        cmbSelectDifficulty.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                repeatBoardBtnActionPerformed(evt);
+                cmbSelectDifficultyActionPerformed(evt);
             }
         });
 
@@ -94,41 +112,83 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             }
         });
 
+        repeatBoardBtn.setText("Repeat Game");
+        repeatBoardBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                repeatBoardBtnActionPerformed(evt);
+            }
+        });
+
+        timerLabel.setText("⏱ 000");
+
+        javax.swing.GroupLayout timerPanelLayout = new javax.swing.GroupLayout(timerPanel);
+        timerPanel.setLayout(timerPanelLayout);
+        timerPanelLayout.setHorizontalGroup(
+            timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(timerPanelLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(timerLabel)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        timerPanelLayout.setVerticalGroup(
+            timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(timerPanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(timerLabel)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout shortMenuPanelLayout = new javax.swing.GroupLayout(shortMenuPanel);
+        shortMenuPanel.setLayout(shortMenuPanelLayout);
+        shortMenuPanelLayout.setHorizontalGroup(
+            shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, shortMenuPanelLayout.createSequentialGroup()
+                .addComponent(cmbSelectDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(markedMines)
+                .addGap(0, 0, 0)
+                .addComponent(timerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(newBoardBtn)
+                    .addComponent(repeatBoardBtn)))
+        );
+        shortMenuPanelLayout.setVerticalGroup(
+            shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(shortMenuPanelLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(shortMenuPanelLayout.createSequentialGroup()
+                        .addComponent(newBoardBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(repeatBoardBtn))
+                    .addGroup(shortMenuPanelLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(timerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(markedMines)
+                                .addComponent(cmbSelectDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(34, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(gameBoard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cmbSelectDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(markedMines)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(newBoardBtn)
-                            .addComponent(repeatBoardBtn))))
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addGap(34, 34, 34)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(gameBoard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(shortMenuPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(34, 34, 34))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(markedMines)
-                            .addComponent(cmbSelectDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(newBoardBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(repeatBoardBtn)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                .addComponent(gameBoard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addComponent(shortMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(gameBoard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(31, 31, 31))
         );
 
         pack();
@@ -154,6 +214,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             setFocusable(false);
             setMargin(new Insets(0,0,0,0));
             setPreferredSize(new Dimension(40, 40));
+
             setFont(new Font("SansSerif", Font.BOLD, 18));
             setBorder(null);
         }
@@ -192,15 +253,24 @@ public class MinesweeperPanel extends javax.swing.JFrame {
 
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         if (gameStarted) {
+                            if (!firstMoveDone && timer != null) {
+                                startTimer();
+                            }
                             if(game.makeMove("💣", mine.getMineRow(), mine.getMineCol())) {
                                 gameEndPane(false, JOptionPane.ERROR_MESSAGE);
                             }
                         } else {
+                            if (timer != null) {
+                                startTimer();
+                            }
                             game.generateMines(mine.row, mine.col);                               
                             gameStarted = true;
                         }
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
                         if (gameStarted) {
+                            if (!firstMoveDone && timer != null) {
+                                startTimer();
+                            }
                             game.makeMove("🚩", mine.getMineRow(), mine.getMineCol());
                             markedMines.setText("🚩 "+(game.getNumMines()-game.getMarkedMinesNum()));
                         } else {
@@ -266,29 +336,61 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             disabled = true;
         }
     }
+    
+    private int[] getParamsBoard(int difficulty){
+            switch (difficulty) {
+                case 1:
+                    return new int[] {EASY_ROWS, EASY_COLS, EASY_MINES};
+                case 2:
+                    return new int[] {MEDIUM_ROWS, MEDIUM_COLS, MEDIUM_MINES};
+                case 3:
+                    return new int[] {DIFFICULT_ROWS, DIFFICULT_COLS, DIFFICULT_MINES};
+                default:
+                    return new int[] {EASY_ROWS, EASY_COLS, EASY_MINES};
+            }
+
+    }
+
+    private boolean checkUsesTimer(int difficulty) {
+        return difficulty == 2 || difficulty == 3;
+    }
    
     private void cmbSelectDifficultyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSelectDifficultyActionPerformed
-        gameReady(cmbSelectDifficulty.getSelectedIndex()+1, false);
-
+        newGame(cmbSelectDifficulty.getSelectedIndex());
     }//GEN-LAST:event_cmbSelectDifficultyActionPerformed
 
     private void repeatBoardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repeatBoardBtnActionPerformed
-        if(gameStarted){
-            gameReady(cmbSelectDifficulty.getSelectedIndex()+1, true);
-        } else {
-            gameReady(cmbSelectDifficulty.getSelectedIndex()+1, false);
-        }
+        gameReady(checkUsesTimer(cmbSelectDifficulty.getSelectedIndex()), new int[] {game.getBoardRows(), game.getBoardCols(), game.getNumMines()}, gameStarted);
     }//GEN-LAST:event_repeatBoardBtnActionPerformed
 
     private void newBoardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newBoardBtnActionPerformed
-        gameReady(cmbSelectDifficulty.getSelectedIndex()+1, false);
+        newGame(cmbSelectDifficulty.getSelectedIndex());
     }//GEN-LAST:event_newBoardBtnActionPerformed
 
-    private void gameReady(int difficulty, boolean repeat) {
+    private void newGame(int difficulty) {
+        if (difficulty == 0) {
+            CustomBoard secondForm = new CustomBoard(this, lastCustomBoardParams);
+            secondForm.setVisible(true);
+        } else {
+            gameReady(checkUsesTimer(difficulty),getParamsBoard(difficulty), false);
+        }
+    }
+    
+    public void newCustomGame(int[] paramsBoard) {
+        lastCustomBoardParams = paramsBoard;
+        gameReady(false, paramsBoard, false);
+    }
+    
+    private void gameReady(boolean useTimer, int[] paramsBoard, boolean repeat) {
         resetGameSquaresBoard();
         gameStarted = repeat;
-        game.startGame(difficulty, repeat);
+        firstMoveDone = false;
+        game.startGame(paramsBoard[0], paramsBoard[1], paramsBoard[2], repeat);
         markedMines.setText("🚩 "+(game.getNumMines()-game.getMarkedMinesNum()));
+        if(timer != null){
+            timer.cancel();
+        }
+        setTimer(useTimer);
         gameSquares.setRows(game.getBoardRows());
         gameSquares.setColumns(game.getBoardCols());
         allSquares = new Square[game.getBoardRows()][game.getBoardCols()];
@@ -307,25 +409,33 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     }
     
     private void gameEndPane(boolean isWin, int msgType) {
+        if(timer != null){
+            timer.cancel();
+        }
         String[] options = {"New game","Repeat game","Examine board", "Exit"};
         int selectedOption;
+        String message;
         if (isWin) {
-            selectedOption = JOptionPane.showOptionDialog(null, "Congratulations!", "", JOptionPane.DEFAULT_OPTION, msgType, null, options, options[3]);
+            message = "Congratulations!";
+            if(timer != null){
+                message += "\r\nYour time was " + timerCount + " seconds.";                
+            }
         } else {
-            selectedOption = JOptionPane.showOptionDialog(null, "Boom!", "", JOptionPane.DEFAULT_OPTION, msgType, null, options, options[3]);
+            message = "Boom!";
         }
+        selectedOption = JOptionPane.showOptionDialog(null, message, "", JOptionPane.DEFAULT_OPTION, msgType, null, options, options[3]);
         switch (selectedOption) {
             case 0:
-                gameReady(cmbSelectDifficulty.getSelectedIndex()+1, false);
+                newGame(cmbSelectDifficulty.getSelectedIndex());
                 break;
             case 1:
-                gameReady(cmbSelectDifficulty.getSelectedIndex()+1, true);
+                gameReady(checkUsesTimer(cmbSelectDifficulty.getSelectedIndex()), new int[] {game.getBoardRows(), game.getBoardCols(), game.getNumMines()}, true);
                 break;
             case 3:
                 this.dispose();
                 System.exit(0);
                 break;
-        };
+        }
     }
             
     private void resetGameSquaresBoard() {
@@ -333,6 +443,43 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         gameBoard.revalidate();
         gameBoard.repaint();
     }
+    
+    private void setTimer(boolean useTimer) {
+        if(timer == null) {
+            if (useTimer){
+                timer = new Timer();
+                timerPanel.setVisible(true);
+            }
+        } else {
+            if (useTimer){
+                timer = new Timer();
+            } else {
+                timerPanel.setVisible(false);
+                timer = null;
+            }
+        }
+        if (timer != null) {
+            timerLabel.setText("⏱ 000");
+            timerCount = 0;
+        }
+    }
+    
+    private void startTimer() {
+        firstMoveDone = true;
+        TimerTask tarea = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println(timerCount);
+                timerCount++;
+                if (timerCount <= MAX_SECONDS) {
+                    timerLabel.setText("⏱ " + String.format("%03d", timerCount));
+                }
+            }
+        };
+        // Schedule the timer to run every second (1000 ms)
+        timer.scheduleAtFixedRate(tarea, 1000, 1000);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -374,5 +521,8 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private javax.swing.JLabel markedMines;
     private javax.swing.JButton newBoardBtn;
     private javax.swing.JButton repeatBoardBtn;
+    private javax.swing.JPanel shortMenuPanel;
+    private javax.swing.JLabel timerLabel;
+    private javax.swing.JPanel timerPanel;
     // End of variables declaration//GEN-END:variables
 }

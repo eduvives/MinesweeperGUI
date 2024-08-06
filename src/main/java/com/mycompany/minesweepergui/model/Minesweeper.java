@@ -15,16 +15,6 @@ import java.util.*;
  */
 public class Minesweeper {
     
-    private static final int easyRows = 8;
-    private static final int easyCols = 8;
-    private static final int easyMines = 10;
-    private static final int mediumRows = 16;
-    private static final int mediumCols = 16;
-    private static final int mediumMines = 40;
-    private static final int difficultRows = 16;
-    private static final int difficultCols = 30;
-    private static final int difficultMines = 99;
-    
     private static int boardRows;
     private static int boardCols;
     private static int numMines;
@@ -39,29 +29,12 @@ public class Minesweeper {
     private boolean[][] board;
     public Square[][] userBoard;
     
-    public boolean startGame (int difficulty, boolean repeat) {
+    public boolean startGame (int rows, int cols, int mines, boolean repeat) {
         
         if (!repeat) {
-            switch (difficulty) {
-                case 1:
-                    boardRows = easyRows;
-                    boardCols = easyCols;
-                    numMines = easyMines;
-                    break;
-                case 2:
-                    boardRows = mediumRows;
-                    boardCols = mediumCols;
-                    numMines = mediumMines;
-                    break;
-                case 3:
-                    boardRows = difficultRows;
-                    boardCols = difficultCols;
-                    numMines = difficultMines;
-                    break;
-                default:
-                    irrationalMove();
-                    return false;
-            }
+            boardRows = rows;
+            boardCols = cols;
+            numMines = mines;
             minesPositions.clear();
             board = new boolean[boardRows][boardCols];
         }
