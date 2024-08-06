@@ -143,6 +143,7 @@ public class Minesweeper {
     public void gameOver(Integer startRow, Integer startCol) {
         if (!gameOver){
             gameEnd = true;
+            
             for (int[] pos : availablePositions) {
                 userBoard[pos[0]][pos[1]].disableSquareAll();
             }

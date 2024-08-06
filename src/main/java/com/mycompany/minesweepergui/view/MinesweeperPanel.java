@@ -25,6 +25,7 @@ import java.util.TimerTask;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollBar;
 
 /**
  *
@@ -32,22 +33,22 @@ import javax.swing.JOptionPane;
  */
 public class MinesweeperPanel extends javax.swing.JFrame {
     
+    // Game logic and Window
     private Minesweeper game;
     private Square[][] allSquares;
     GridLayout gameSquares = new GridLayout();
     private boolean gameStarted;
-    private Timer timer = null;
-    private boolean timerStarted;
-    private boolean isTimerCanceled;
-    private int timerCount;
     private int previousDifficulty;
-    
     private static final int MINE_SIZE = 40;
+    
+    // Scroll
     private static final int MAX_HORIZONTAL_SCROLL = 1600;
     private static final int MAX_VERTICAL_SCROLL = 720;
-    private static int HORIZONTA_SCROLL_SIZE;
-    private static int VERTICAL_SCROLL_SIZE;
+    private static int HORIZONTA_SCROLL_HEIGHT;
+    private static int VERTICAL_SCROLL_WIDTH;
+    private static int SCROLL_UNIT_INCREMENT = 16;
     
+    // Difficulties
     private static final int CUSTOM = 0;
     private static final int EASY = 1;
     private static final int MEDIUM = 2;
@@ -57,15 +58,8 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private static final int LUNATIC = 6;
     private static final int DEFAULT_DIFFICULTY = EASY;
     private static final String[] DIFFICULTIES_NAMES = {"Custom", "Easy", "Medium", "Difficult", "Hardcore", "Insane", "Lunatic"};
-    private static final Map<Integer, Integer> DIFFICULTIES_TIMES = new HashMap<>();
-    static {
-        DIFFICULTIES_TIMES.put(MEDIUM, 999);
-        DIFFICULTIES_TIMES.put(DIFFICULT, 999);
-        DIFFICULTIES_TIMES.put(HARDCORE, 999);
-        DIFFICULTIES_TIMES.put(INSANE, 9999);
-        DIFFICULTIES_TIMES.put(LUNATIC, 99999);
-    }
-        
+    
+    // Difficulties params
     private static final int EASY_ROWS = 8;
     private static final int EASY_COLS = 8;
     private static final int EASY_MINES = 10;
@@ -94,6 +88,22 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         { LUNATIC_ROWS, LUNATIC_COLS, LUNATIC_MINES }};
     InfoDifficulties infoDifficultiesPanel = null;
     
+    // Timer Difficulties
+    private Timer timer = null;
+    private boolean timerStarted;
+    private boolean isTimerCanceled;
+    private int timerCount;
+    
+    private static final Map<Integer, Integer> DIFFICULTIES_TIMES = new HashMap<>();
+    static {
+        DIFFICULTIES_TIMES.put(MEDIUM, 999);
+        DIFFICULTIES_TIMES.put(DIFFICULT, 999);
+        DIFFICULTIES_TIMES.put(HARDCORE, 999);
+        DIFFICULTIES_TIMES.put(INSANE, 9999);
+        DIFFICULTIES_TIMES.put(LUNATIC, 99999);
+    }
+    
+    // Listeners
     ActionListener cmbSelectDifficultyListener;
     
     /**
@@ -103,13 +113,23 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         game = new Minesweeper();
         initComponents();
         setCmbSelectDifficultyListener();
-        previousDifficulty = DEFAULT_DIFFICULTY;
+        
+        // Board
         gameBoard.setLayout(gameSquares);
         gameSquares.setHgap(0);
         gameSquares.setVgap(0);
-        HORIZONTA_SCROLL_SIZE = (int) Math.ceil(gameBoardScroll.getHorizontalScrollBar().getPreferredSize().getHeight());
-        VERTICAL_SCROLL_SIZE = (int) Math.ceil(gameBoardScroll.getVerticalScrollBar().getPreferredSize().getWidth());
+        
+        // Scroll
+        HORIZONTA_SCROLL_HEIGHT = (int) Math.ceil(gameBoardScroll.getHorizontalScrollBar().getPreferredSize().getHeight());
+        VERTICAL_SCROLL_WIDTH = (int) Math.ceil(gameBoardScroll.getVerticalScrollBar().getPreferredSize().getWidth());
+        gameBoardScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_UNIT_INCREMENT);
+        gameBoardScroll.getHorizontalScrollBar().setUnitIncrement(SCROLL_UNIT_INCREMENT);
+        
+        // Game
+        previousDifficulty = DEFAULT_DIFFICULTY;
         newGame(DEFAULT_DIFFICULTY);
+        
+        // Window
         markedMines.setFont(new Font("SansSerif", Font.PLAIN, 20));
         timerLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
         timerPanel.setVisible(false);
@@ -564,8 +584,8 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                 gameBoard.add(mine);
             }
         }
-        int horizontalSize = (paramsBoard[0]*MINE_SIZE > MAX_VERTICAL_SCROLL) ? paramsBoard[1]*MINE_SIZE + VERTICAL_SCROLL_SIZE : paramsBoard[1]*MINE_SIZE;
-        int verticalSize = (paramsBoard[1]*MINE_SIZE > MAX_HORIZONTAL_SCROLL) ? paramsBoard[0]*MINE_SIZE + HORIZONTA_SCROLL_SIZE : paramsBoard[0]*MINE_SIZE;
+        int horizontalSize = (paramsBoard[0]*MINE_SIZE > MAX_VERTICAL_SCROLL) ? paramsBoard[1]*MINE_SIZE + VERTICAL_SCROLL_WIDTH : paramsBoard[1]*MINE_SIZE;
+        int verticalSize = (paramsBoard[1]*MINE_SIZE > MAX_HORIZONTAL_SCROLL) ? paramsBoard[0]*MINE_SIZE + HORIZONTA_SCROLL_HEIGHT : paramsBoard[0]*MINE_SIZE;
         gameBoardScroll.setPreferredSize(new Dimension(Math.min(horizontalSize, MAX_HORIZONTAL_SCROLL), Math.min(verticalSize, MAX_VERTICAL_SCROLL)));
         this.pack();
         this.setVisible(true);
@@ -607,6 +627,12 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         gameBoard.removeAll();
         gameBoard.revalidate();
         gameBoard.repaint();
+        
+        // Reset Scrollbar
+        JScrollBar verticalScrollBar = gameBoardScroll.getVerticalScrollBar();
+        JScrollBar horizontalScrollBar = gameBoardScroll.getHorizontalScrollBar();
+        verticalScrollBar.setValue(verticalScrollBar.getMinimum());
+        horizontalScrollBar.setValue(horizontalScrollBar.getMinimum());
     }
     
     private void setTimer(int difficulty) {

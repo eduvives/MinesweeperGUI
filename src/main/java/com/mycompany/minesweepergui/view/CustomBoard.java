@@ -15,16 +15,22 @@ import javax.swing.event.DocumentListener;
 public class CustomBoard extends javax.swing.JDialog {
 
     private MinesweeperPanel mainPanel;
-    private Color originalBackgroundColor;
+    
     private static final int MIN_ROWS = 8;
     private static final int MAX_ROWS = 100;
     private static final int MIN_COLS = 8;
     private static final int MAX_COLS = 100;
     private static final int MIN_MINES = 1;
     private int maxMines;
-    private boolean validRows = false;
-    private boolean validCols = false;
-    private boolean validMines = false;
+    private static final int MIN_DENSITY = 0;
+    private static final int MAX_DENSITY = 100;
+    
+    private Integer rowsNumValue = null;
+    private Integer colsNumValue = null;
+    private Integer minesNumValue = null;
+    private Double densityNumValue = null;
+    
+    private Color originalBackgroundColor;
     private static final Color INVALID_FIELD = new Color(254,218,218);
     private static final Color VALID_LABEL = new Color(115, 115, 115);
     private static final Color INVALID_LABEL = new Color(255,0,0);
@@ -64,7 +70,6 @@ public class CustomBoard extends javax.swing.JDialog {
 
         rowsLabel = new javax.swing.JLabel();
         colsLabel = new javax.swing.JLabel();
-        minesLabel = new javax.swing.JLabel();
         rowsField = new javax.swing.JTextField();
         colsField = new javax.swing.JTextField();
         minesField = new javax.swing.JTextField();
@@ -72,6 +77,7 @@ public class CustomBoard extends javax.swing.JDialog {
         colsInfoLabel = new javax.swing.JLabel();
         minesInfoLabel = new javax.swing.JLabel();
         acceptBtn = new javax.swing.JButton();
+        cmbMinesInput = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -80,9 +86,6 @@ public class CustomBoard extends javax.swing.JDialog {
 
         colsLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         colsLabel.setText("Columns");
-
-        minesLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        minesLabel.setText("Mines");
 
         rowsField.setColumns(3);
         rowsField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -131,33 +134,45 @@ public class CustomBoard extends javax.swing.JDialog {
             }
         });
 
+        cmbMinesInput.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cmbMinesInput.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Mines", "Density" }));
+        cmbMinesInput.setFocusable(false);
+        cmbMinesInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbMinesInputActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(rowsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(colsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(minesInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(colsLabel)
-                            .addComponent(minesLabel)
-                            .addComponent(rowsLabel))
-                        .addGap(25, 25, 25)
+                            .addComponent(cmbMinesInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(rowsLabel)
+                                    .addComponent(colsLabel))))
+                        .addGap(17, 17, 17)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(colsField)
                             .addComponent(rowsField)
                             .addComponent(minesField))
-                        .addGap(40, 40, 40))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(rowsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(colsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(minesInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addGap(45, 45, 45))))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(acceptBtn)
@@ -180,8 +195,8 @@ public class CustomBoard extends javax.swing.JDialog {
                 .addComponent(colsInfoLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(minesLabel)
-                    .addComponent(minesField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(minesField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbMinesInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(4, 4, 4)
                 .addComponent(minesInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -205,22 +220,28 @@ public class CustomBoard extends javax.swing.JDialog {
     }//GEN-LAST:event_minesFieldActionPerformed
 
     private void acceptBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptBtnActionPerformed
-        if(validRows && validCols && validMines) {
-            mainPanel.newCustomGame(new int[] {Integer.parseInt(rowsField.getText()), Integer.parseInt(colsField.getText()), Integer.parseInt(minesField.getText())});
+        if(isValidValue(rowsNumValue) && isValidValue(colsNumValue) && isValidValue(minesNumValue)) {
+            mainPanel.newCustomGame(new int[] {rowsNumValue, colsNumValue, minesNumValue});
             this.dispose();
         } else {
-            if (validRows) {
+            if (isValidValue(rowsNumValue)) {
                 rowsField.setBackground(originalBackgroundColor);
             } else {
                rowsField.setBackground(INVALID_FIELD);
             }
-            if (validCols) {
+            if (isValidValue(colsNumValue)) {
                 colsField.setBackground(originalBackgroundColor);
             } else {
                 colsField.setBackground(INVALID_FIELD);
             }
-            if (validRows && validCols) {
-                if (validMines) {
+            if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Mines") && isValidValue(rowsNumValue) && isValidValue(colsNumValue)) {
+                if (isValidValue(minesNumValue)) {
+                    minesField.setBackground(originalBackgroundColor);
+                } else {
+                    minesField.setBackground(INVALID_FIELD);
+                }
+            } else if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Density")) {
+                if (isValidValue(densityNumValue)) {
                     minesField.setBackground(originalBackgroundColor);
                 } else {
                     minesField.setBackground(INVALID_FIELD);
@@ -228,6 +249,16 @@ public class CustomBoard extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_acceptBtnActionPerformed
+
+    private void cmbMinesInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMinesInputActionPerformed
+
+        if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Mines")) {
+            updateRangeInfoLabelsMines();
+        } else {
+            minesInfoLabel.setText("min " + MIN_DENSITY + " - max " + MAX_DENSITY);
+            updateInfoLabelsDensity();
+        }        
+    }//GEN-LAST:event_cmbMinesInputActionPerformed
 
     private void setFieldsListeners(){
         rowsField.getDocument().addDocumentListener(new DocumentListener() {
@@ -262,84 +293,129 @@ public class CustomBoard extends javax.swing.JDialog {
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-                updateInfoLabelsMines();
+                if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Mines")) {
+                    updateInfoLabelsMines();
+                } else {
+                    updateInfoLabelsDensity();
+                }                
             }
             @Override
             public void insertUpdate(DocumentEvent e) {
-                updateInfoLabelsMines();
+                if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Mines")) {
+                    updateInfoLabelsMines();
+                } else {
+                    updateInfoLabelsDensity();
+                }
             }
         });
     }
     
+    // Method to check if an input of the number of rows, columns, mines or density is valid. It will be valid as long as its value is not null.
+    private boolean isValidValue(Object value) {
+        return value != null;
+    }
+    
     private void updateInfoLabelsRows() {
         rowsField.setBackground(originalBackgroundColor);
-        if(!rowsField.getText().isEmpty()) {
+        String rowsFieldText = rowsField.getText().trim();
+        if(!rowsFieldText.isEmpty()) {
             try {
-                int number = Integer.parseInt(rowsField.getText());
-                validRows = !(number < MIN_ROWS || number > MAX_ROWS);
+                int rowsNumber = Integer.parseInt(rowsFieldText);
+                rowsNumValue = !(rowsNumber < MIN_ROWS || rowsNumber > MAX_ROWS) ? rowsNumber : null;
             } catch (NumberFormatException e) {
-                validRows = false;
+                rowsNumValue = null;
             } finally {
-                if (validRows) {
+                if (isValidValue(rowsNumValue)) {
                     rowsInfoLabel.setForeground(VALID_LABEL);
                 } else {
                     rowsInfoLabel.setForeground(INVALID_LABEL);
                 }
-                updateRowsColsInfoLabelsMines();
             }
         } else {
-            validRows = false;
+            rowsNumValue = null;
             rowsInfoLabel.setForeground(VALID_LABEL);
+        }
+        if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Mines")) {
+            updateRangeInfoLabelsMines();
         }
     }
     private void updateInfoLabelsCols() {
         colsField.setBackground(originalBackgroundColor);
-        if(!colsField.getText().isEmpty()) {
+        String colsFieldText = colsField.getText().trim();
+        if(!colsFieldText.isEmpty()) {
             try {
-                int number = Integer.parseInt(colsField.getText());
-                validCols = !(number < MIN_COLS || number > MAX_COLS);
+                int colsNumber = Integer.parseInt(colsFieldText);
+                colsNumValue = !(colsNumber < MIN_COLS || colsNumber > MAX_COLS) ? colsNumber : null;
             } catch (NumberFormatException e) {
-                validCols = false;
+                colsNumValue = null;
             } finally {
-                if (validCols) {
+                if (isValidValue(colsNumValue)) {
                         colsInfoLabel.setForeground(VALID_LABEL);
                     } else {
                         colsInfoLabel.setForeground(INVALID_LABEL);
-                    }
-                updateRowsColsInfoLabelsMines();
+                    }                                
             }
         } else {
-            validCols = false;
+            colsNumValue = null;
             colsInfoLabel.setForeground(VALID_LABEL);
+        }
+        
+        if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Mines")) {
+            updateRangeInfoLabelsMines();
         }
     }
     private void updateInfoLabelsMines() {
         minesField.setBackground(originalBackgroundColor);
-        if(!minesField.getText().isEmpty() && validRows && validCols) {
+        String minesFieldText = minesField.getText().trim();
+        if(!minesFieldText.isEmpty() && isValidValue(rowsNumValue) && isValidValue(colsNumValue)) {
             try {
-                int number = Integer.parseInt(minesField.getText());
-                validMines = !(number < MIN_MINES || number > maxMines);
+                int minesNumber = Integer.parseInt(minesFieldText);
+                minesNumValue = !(minesNumber < MIN_MINES || minesNumber > maxMines) ? minesNumber : null;
             } catch (NumberFormatException e) {
-                validMines = false;
+                minesNumValue = null;
             } finally {
-                if (validMines) {
+                if (isValidValue(minesNumValue)) {
                     minesInfoLabel.setForeground(VALID_LABEL);
                 } else {
                     minesInfoLabel.setForeground(INVALID_LABEL);
                 }               
             } 
         } else {
-            validMines = false;
+            minesNumValue = null;
             minesInfoLabel.setForeground(VALID_LABEL);
         }
     }
-    private void updateRowsColsInfoLabelsMines() {
-        if (!validRows || !validCols) {
-            validMines = false;
+    private void updateInfoLabelsDensity() {
+        minesField.setBackground(originalBackgroundColor);
+        String minesFieldText = minesField.getText().trim().replace(',', '.');
+        if(!minesFieldText.isEmpty()) {
+            try {
+                double densityNumber = Double.parseDouble(minesFieldText);
+                densityNumValue = !(densityNumber < MIN_DENSITY || densityNumber > MAX_DENSITY) ? densityNumber : null;
+            } catch (NumberFormatException e) {
+                densityNumValue = null;
+            } finally {
+                if (isValidValue(densityNumValue)) {
+                    minesInfoLabel.setForeground(VALID_LABEL);
+                } else {
+                    minesInfoLabel.setForeground(INVALID_LABEL);
+                }               
+            } 
+        } else {
+            densityNumValue = null;
+            minesInfoLabel.setForeground(VALID_LABEL);
+        }
+        
+        minesNumValue = (isValidValue(densityNumValue) && isValidValue(rowsNumValue) && isValidValue(colsNumValue)) ? (int) Math.round(densityNumValue * (rowsNumValue * colsNumValue) / 100) : null;
+    }
+    private void updateRangeInfoLabelsMines() {
+        if (!isValidValue(rowsNumValue) || !isValidValue(colsNumValue)) {
+            minesNumValue = null;
             minesInfoLabel.setText("min ? - max ?");
             minesInfoLabel.setForeground(VALID_LABEL);
+            minesField.setBackground(originalBackgroundColor);
         } else {
-            maxMines = Integer.parseInt(rowsField.getText()) * Integer.parseInt(colsField.getText()) - 9;
+            maxMines = rowsNumValue * colsNumValue - 9;
             minesInfoLabel.setText("min " + MIN_MINES + " - max " + maxMines);
             updateInfoLabelsMines();
         }
@@ -347,12 +423,12 @@ public class CustomBoard extends javax.swing.JDialog {
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton acceptBtn;
+    private javax.swing.JComboBox<String> cmbMinesInput;
     private javax.swing.JTextField colsField;
     private javax.swing.JLabel colsInfoLabel;
     private javax.swing.JLabel colsLabel;
     private javax.swing.JTextField minesField;
     private javax.swing.JLabel minesInfoLabel;
-    private javax.swing.JLabel minesLabel;
     private javax.swing.JTextField rowsField;
     private javax.swing.JLabel rowsInfoLabel;
     private javax.swing.JLabel rowsLabel;
