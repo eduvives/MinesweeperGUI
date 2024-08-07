@@ -140,10 +140,10 @@ public class Minesweeper {
             gameEnd = true;
             
             for (int[] pos : availablePositions) {
-                userBoard[pos[0]][pos[1]].disableSquareAll();
+                userBoard[pos[0]][pos[1]].disableSquare();
             }
             for (int[] pos : minesPositions) {
-                userBoard[pos[0]][pos[1]].disableSquareAll();
+                userBoard[pos[0]][pos[1]].disableSquare();
                 userBoard[pos[0]][pos[1]].setText("💣");                
                 userBoard[pos[0]][pos[1]].setFont(new Font("SansSerif", Font.PLAIN, 18));
                 
@@ -167,10 +167,10 @@ public class Minesweeper {
             gameEnd = true;
             
             for (int[] pos : minesPositions) {
-                userBoard[pos[0]][pos[1]].disableSquareAll();
+                userBoard[pos[0]][pos[1]].disableSquare();
             }
             for (int[] pos : availablePositions) {
-                userBoard[pos[0]][pos[1]].disableSquareAll();
+                userBoard[pos[0]][pos[1]].disableSquare();
                 if (!userBoard[pos[0]][pos[1]].isDiscovered() && !userBoard[pos[0]][pos[1]].isDoubtful() && allMinesMarked){
                     searchMinesAround(pos[0],pos[1]);
                 }
@@ -236,10 +236,10 @@ public class Minesweeper {
                 userBoard[row][col].setNumMinesAroundPos(numMinesAroundPos);
                 if (!userBoard[row][col].isDisabled()) {
                     userBoard[row][col].addListenerDiscovered();
-                    userBoard[row][col].disableSquare();
+                    userBoard[row][col].removeListenerCreated();
                 }
             } else {
-                userBoard[row][col].disableSquareAll();
+                userBoard[row][col].disableSquare();
             }
             userBoard[row][col].setBackground(new Color(168, 168, 168));
         }
@@ -330,10 +330,10 @@ public class Minesweeper {
             userBoard[row][col].setNumMinesAroundPos(numMinesAroundPos);
             if (!userBoard[row][col].isDisabled()) {
                 userBoard[row][col].addListenerDiscovered();
-                userBoard[row][col].disableSquare();
+                userBoard[row][col].removeListenerCreated();
             }
         } else {
-            userBoard[row][col].disableSquareAll();
+            userBoard[row][col].disableSquare();
         }
         userBoard[row][col].setBackground(new Color(168, 168, 168));
         return boom;

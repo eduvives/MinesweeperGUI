@@ -450,7 +450,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                             }
                         }
                         if (mine.getNumMinesAroundPos() == numMinesMarkedAround) {
-                            allSquares[row][col].disableSquareAll();
+                            allSquares[row][col].disableSquare();
                             boolean boom = false;
                             for (int[] pos : notMarkedSquaresAround) {
                                 if (!allSquares[pos[0]][pos[1]].isDiscovered() && !allSquares[pos[0]][pos[1]].isDoubtful()){
@@ -477,13 +477,13 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         private void removeListenerFocus() {
             this.removeMouseListener(mouseListenerFocus);
         }
-        public void disableSquare() {
+        public void removeListenerCreated() {
             this.removeMouseListener(mouseListenerCreated);
         }
-        public void disableSquareDiscovered() {
+        public void removeListenerDiscovered() {
             this.removeMouseListener(mouseListenerDiscovered);
         }
-        public void disableSquareAll() {
+        public void disableSquare() {
             if(!game.isGameEnd()){
                 game.getAvailablePositions().removeIf(p -> p[0] == row && p[1] == col);
             }
