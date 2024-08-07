@@ -25,7 +25,6 @@ public class Minesweeper {
     private List<int[]> minesPositions = new ArrayList<>();
     private List<int[]> availablePositions = new ArrayList<>();
     private List<int[]> notDiscoveredPositions = new ArrayList<>();
-    private boolean gameOver;
     private boolean gameEnd;
     
     public Square[][] userBoard;
@@ -39,7 +38,6 @@ public class Minesweeper {
             minesPositions.clear();
         }
         
-        gameOver = false;
         gameEnd = false;
         markedMinesNum = 0;
         correctMarkedMinesNum = 0;
@@ -136,7 +134,7 @@ public class Minesweeper {
     }
     
     public void gameOver(Integer startRow, Integer startCol) {
-        if (!gameOver){
+        if (!gameEnd){
             gameEnd = true;
             
             for (int[] pos : availablePositions) {
@@ -156,7 +154,6 @@ public class Minesweeper {
                     
                 }
             }
-            gameOver = true;
         }
     }
     public boolean checkWin (){

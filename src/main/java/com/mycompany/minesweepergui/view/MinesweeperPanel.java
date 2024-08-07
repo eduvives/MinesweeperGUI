@@ -39,7 +39,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     GridLayout gameSquares = new GridLayout();
     private boolean gameStarted;
     private int previousDifficulty;
-    private static final int MINE_SIZE = 40;
+    private static final int SQUARE_SIZE = 40;
     
     // Scroll
     private static final int MAX_HORIZONTAL_SCROLL = 1600;
@@ -91,17 +91,19 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     // Timer Difficulties
     private Timer timer = null;
     private boolean timerStarted;
-    private boolean isTimerCanceled;
     private int timerCount;
     
-    private static final Map<Integer, Integer> DIFFICULTIES_TIMES = new HashMap<>();
+    private static final Map<Integer, Integer> DIFFICULTIES_MAX_TIME = new HashMap<>();
     static {
-        DIFFICULTIES_TIMES.put(MEDIUM, 999);
-        DIFFICULTIES_TIMES.put(DIFFICULT, 999);
-        DIFFICULTIES_TIMES.put(HARDCORE, 999);
-        DIFFICULTIES_TIMES.put(INSANE, 9999);
-        DIFFICULTIES_TIMES.put(LUNATIC, 99999);
+        DIFFICULTIES_MAX_TIME.put(EASY, 99);
+        DIFFICULTIES_MAX_TIME.put(MEDIUM, 999);
+        DIFFICULTIES_MAX_TIME.put(DIFFICULT, 999);
+        DIFFICULTIES_MAX_TIME.put(HARDCORE, 999);
+        DIFFICULTIES_MAX_TIME.put(INSANE, 9999);
+        DIFFICULTIES_MAX_TIME.put(LUNATIC, 99999);
     }
+    private boolean showTimer;
+    private boolean useTimer;
     
     // Listeners
     ActionListener cmbSelectDifficultyListener;
@@ -133,7 +135,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         markedMines.setFont(new Font("SansSerif", Font.PLAIN, 20));
         timerLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
         timerPanel.setVisible(false);
-        setTimerPanelCancelListener();
+        setTimerPanelHideListener();
         setLocationRelativeTo(null);
         setResizable(false);
         getContentPane().requestFocusInWindow();
@@ -337,15 +339,15 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             
             setFocusable(false);
             setMargin(new Insets(0,0,0,0));
-            setPreferredSize(new Dimension(MINE_SIZE, MINE_SIZE));
+            setPreferredSize(new Dimension(SQUARE_SIZE, SQUARE_SIZE));
 
             setFont(new Font("SansSerif", Font.BOLD, 20));
             setBorder(null);
         }
-        public int getMineRow() {
+        public int getSquareRow() {
             return row;
         }
-        public int getMineCol() {
+        public int getSquareCol() {
             return col;
         }
         public int getNumMinesAroundPos() {
@@ -390,21 +392,21 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                 public void mousePressed(MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {
     
-                        Square mine = (Square) e.getSource();
+                        Square square = (Square) e.getSource();
                         
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             if (gameStarted) {
                                 if (!timerStarted && timer != null) {
                                     startTimer(cmbSelectDifficulty.getSelectedIndex());
                                 }
-                                if(game.makeMove("💣", mine.getMineRow(), mine.getMineCol())) {
+                                if(game.makeMove("💣", square.getSquareRow(), square.getSquareCol())) {
                                     gameEndPane(false, JOptionPane.ERROR_MESSAGE);
                                 }
                             } else {
                                 if (timer != null) {
                                     startTimer(cmbSelectDifficulty.getSelectedIndex());
                                 }
-                                game.generateMines(mine.row, mine.col);                               
+                                game.generateMines(square.getSquareRow(), square.getSquareCol());                               
                                 gameStarted = true;
                             }
                         } else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -412,7 +414,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                                 if (!timerStarted && timer != null) {
                                     startTimer(cmbSelectDifficulty.getSelectedIndex());
                                 }
-                                game.makeMove("🚩", mine.getMineRow(), mine.getMineCol());
+                                game.makeMove("🚩", square.getSquareRow(), square.getSquareCol());
                                 markedMines.setText("🚩 "+(game.getNumMines()-game.getMarkedMinesNum()));
                             } else {
                                 JOptionPane.showMessageDialog(null, "First select where to start","",JOptionPane.WARNING_MESSAGE);
@@ -432,14 +434,14 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                 public void mousePressed(MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         
-                        Square mine = (Square) e.getSource();
+                        Square square = (Square) e.getSource();
                         int numMinesMarkedAround = 0;
                         List<int[]> notMarkedSquaresAround = new ArrayList<>();
                     
                         for (int i = -1; i < 2; i++) {
                             for (int y = -1; y < 2; y++) {
-                                int newRow = row + i;
-                                int newCol = col + y;
+                                int newRow = square.getSquareRow() + i;
+                                int newCol = square.getSquareCol()+ y;
                                 if (newRow >= 0 && newCol >= 0 && newRow < game.getBoardRows() && newCol < game.getBoardCols()){
                                     if (allSquares[newRow][newCol].isMarked()) {
                                         numMinesMarkedAround++;
@@ -449,8 +451,8 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                                 }
                             }
                         }
-                        if (mine.getNumMinesAroundPos() == numMinesMarkedAround) {
-                            allSquares[row][col].disableSquare();
+                        if (square.getNumMinesAroundPos() == numMinesMarkedAround) {
+                            allSquares[square.getSquareRow()][square.getSquareCol()].disableSquare();
                             boolean boom = false;
                             for (int[] pos : notMarkedSquaresAround) {
                                 if (!allSquares[pos[0]][pos[1]].isDiscovered() && !allSquares[pos[0]][pos[1]].isDoubtful()){
@@ -577,15 +579,15 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         
         for(int i=0; i<gameSquares.getRows(); i++){
             for(int y=0; y<gameSquares.getColumns(); y++){
-                Square mine = new Square(i,y);
-                allSquares[i][y] = mine;
-                mine.addListenerCreated();
-                mine.addListenerFocus();
-                gameBoard.add(mine);
+                Square square = new Square(i,y);
+                allSquares[i][y] = square;
+                square.addListenerCreated();
+                square.addListenerFocus();
+                gameBoard.add(square);
             }
         }
-        int horizontalSize = (paramsBoard[0]*MINE_SIZE > MAX_VERTICAL_SCROLL) ? paramsBoard[1]*MINE_SIZE + VERTICAL_SCROLL_WIDTH : paramsBoard[1]*MINE_SIZE;
-        int verticalSize = (paramsBoard[1]*MINE_SIZE > MAX_HORIZONTAL_SCROLL) ? paramsBoard[0]*MINE_SIZE + HORIZONTA_SCROLL_HEIGHT : paramsBoard[0]*MINE_SIZE;
+        int horizontalSize = (paramsBoard[0]*SQUARE_SIZE > MAX_VERTICAL_SCROLL) ? paramsBoard[1]*SQUARE_SIZE + VERTICAL_SCROLL_WIDTH : paramsBoard[1]*SQUARE_SIZE;
+        int verticalSize = (paramsBoard[1]*SQUARE_SIZE > MAX_HORIZONTAL_SCROLL) ? paramsBoard[0]*SQUARE_SIZE + HORIZONTA_SCROLL_HEIGHT : paramsBoard[0]*SQUARE_SIZE;
         gameBoardScroll.setPreferredSize(new Dimension(Math.min(horizontalSize, MAX_HORIZONTAL_SCROLL), Math.min(verticalSize, MAX_VERTICAL_SCROLL)));
         this.pack();
         this.setVisible(true);
@@ -594,7 +596,6 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private void gameEndPane(boolean isWin, int msgType) {
         if(timer != null){
             timer.cancel();
-            isTimerCanceled = true;
         }
         String[] options = {"New game","Repeat game","Examine board", "Exit"};
         int selectedOption;
@@ -608,7 +609,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         } else {
             message = "Boom!";
         }
-        selectedOption = JOptionPane.showOptionDialog(null, message, "", JOptionPane.DEFAULT_OPTION, msgType, null, options, options[3]);
+        selectedOption = JOptionPane.showOptionDialog(null, message, "", JOptionPane.DEFAULT_OPTION, msgType, null, options, options[0]);
         switch (selectedOption) {
             case 0:
                 newGame(cmbSelectDifficulty.getSelectedIndex());
@@ -636,34 +637,34 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     }
     
     private void setTimer(int difficulty) {
-        boolean useTimer = DIFFICULTIES_TIMES.containsKey(difficulty);
+        
+        showTimer = difficulty != EASY && difficulty != CUSTOM;
+        useTimer = difficulty != CUSTOM;
         timerStarted = false;
-        isTimerCanceled = false;
-        if(timer == null) {
-            if (useTimer){
-                resetTimerCount(difficulty);
-                timerPanel.setVisible(true);
-            }
-        } else {
+        
+        if(timer != null) {
             timer.cancel();
-            if (useTimer){
-                resetTimerCount(difficulty);
-            } else {
-                timerPanel.setVisible(false);
-                timer = null;
-            }
+        }
+        
+        timerPanel.setVisible(showTimer);
+ 
+        if (useTimer){
+            resetTimerCount(difficulty);
+        } else {
+            timer = null;
         }
     }
     
     private void resetTimerCount(int difficulty) {
+        
         timer = new Timer();
-        timerLabel.setText("⏱ " + String.format("%0" + String.valueOf(DIFFICULTIES_TIMES.get(difficulty)).length() + "d", 0));
         timerCount = 0;
+        timerLabel.setText("⏱ " + String.format("%0" + String.valueOf(DIFFICULTIES_MAX_TIME.get(difficulty)).length() + "d", 0));
     }
     
     private void startTimer(int difficulty) {
-        timerStarted = true;
-        Integer difficultyTime = DIFFICULTIES_TIMES.get(difficulty);
+        
+        Integer difficultyTime = DIFFICULTIES_MAX_TIME.get(difficulty);
         int difficultyTimeDigits = String.valueOf(difficultyTime).length();
         
         TimerTask tarea = new TimerTask() {
@@ -677,19 +678,15 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         };
         // Schedule the timer to run every second (1000 ms)
         timer.scheduleAtFixedRate(tarea, 1000, 1000);
+        timerStarted = true;
     }
     
-    private void setTimerPanelCancelListener(){
+    private void setTimerPanelHideListener(){
         timerLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                    if (timer != null && !isTimerCanceled) {
-                        timerPanel.setVisible(false);
-                        timer.cancel();
-                        isTimerCanceled = true;
-                        timer = null;
-                    }
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && !game.isGameEnd()) {
+                    timerPanel.setVisible(false);
                 }
             }
         });
