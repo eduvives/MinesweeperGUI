@@ -28,7 +28,6 @@ public class Minesweeper {
     private boolean gameOver;
     private boolean gameEnd;
     
-    private boolean[][] board;
     public Square[][] userBoard;
     
     public boolean startGame (int rows, int cols, int mines, boolean repeat) {
@@ -38,7 +37,6 @@ public class Minesweeper {
             boardCols = cols;
             numMines = mines;
             minesPositions.clear();
-            board = new boolean[boardRows][boardCols];
         }
         
         gameOver = false;
@@ -115,12 +113,10 @@ public class Minesweeper {
                 userBoard[row][col].setDoubtful(false);
                 userBoard[row][col].setText("");
                 doubtfulMinesNum--;
-            } else {
-                irrationalMove();
             }
         } else if (action.equals("💣")){
             if (!userBoard[row][col].isMarked() && !userBoard[row][col].isDoubtful()){
-                if(board[row][col]){
+                if(minesPositions.stream().anyMatch(pos -> pos[0] == row && pos[1] == col)){
                     gameOver(row, col);
                     return true;
                 } else {
@@ -134,9 +130,8 @@ public class Minesweeper {
                     
                 }
             }
-        } else {
-            irrationalMove();
         }
+        
         return false;
     }
     
@@ -192,10 +187,6 @@ public class Minesweeper {
             return false;
         }
     }
-    
-    public void irrationalMove(){
-        System.out.println("Don't be stupid... please.");
-    }
 
     // STACK IMPLEMENTATION
     private Integer[] searchMinesAround(int startRow, int startCol){
@@ -206,11 +197,11 @@ public class Minesweeper {
         notDiscoveredPositions.removeIf(p -> p[0] == startRow && p[1] == startCol);
         
         while (!squaresStack.isEmpty()) {
-            int[] pos = squaresStack.pop();
-            int row = pos[0];
-            int col = pos[1];
+            int[] square = squaresStack.pop();
+            int row = square[0];
+            int col = square[1];
             
-            if (board[row][col] && explosionPosition == null) {
+            if (minesPositions.stream().anyMatch(pos -> pos[0] == row && pos[1] == col) && explosionPosition == null) {
                 explosionPosition = new Integer[] {row, col};
             }
 
@@ -222,7 +213,7 @@ public class Minesweeper {
                     int newRow = row + i;
                     int newCol = col + y;
                     if (newRow >= 0 && newCol >= 0 && newRow < boardRows && newCol < boardCols) {
-                        if (board[newRow][newCol]) {
+                        if (minesPositions.stream().anyMatch(pos -> pos[0] == newRow && pos[1] == newCol)) {
                             numMinesAroundPos++;
                         } else if (!userBoard[newRow][newCol].isDiscovered() && !userBoard[newRow][newCol].isDoubtful()) {
                             positionsToSearch.add(new int[] {newRow, newCol});
@@ -351,10 +342,6 @@ public class Minesweeper {
     
     public void generateMines(int row, int col){
         
-        if (row < 0 || col < 0 || row >= boardRows || col >= boardCols) {
-            irrationalMove();
-        }
-        
         List<int[]> excludePositions = new ArrayList<>();
         for (int i = -1; i < 2; i++) {
             for (int y = -1; y < 2; y++) {
@@ -380,7 +367,6 @@ public class Minesweeper {
             int randomIndex = random.nextInt(availablePositions.size());
             int[] randomMatrixIndex = availablePositions.get(randomIndex);
             minesPositions.add(randomMatrixIndex);
-            board[randomMatrixIndex[0]][randomMatrixIndex[1]] = true;
             availablePositions.remove(randomIndex);
         }
         
