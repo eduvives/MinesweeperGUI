@@ -7,6 +7,11 @@ package com.mycompany.minesweepergui.model;
 import com.mycompany.minesweepergui.view.MinesweeperPanel.Square;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -28,6 +33,11 @@ public class Minesweeper {
     private boolean gameEnd;
     
     public Square[][] userBoard;
+    
+    private boolean timerStarted;
+    private int timerCount;
+    
+    private static final String FILE_NAME = "minesweeper_scores.txt";
     
     public boolean startGame (int rows, int cols, int mines, boolean repeat) {
         
@@ -82,7 +92,19 @@ public class Minesweeper {
     public void setUserBoard(Square[][] allSquares){
         userBoard = allSquares;
     }
-    
+    public boolean isTimerStarted() {
+        return timerStarted;
+    }
+    public void setTimerStarted(boolean timerStarted) {
+        this.timerStarted = timerStarted;
+    }
+    public int getTimerCount() {
+        return timerCount;
+    }
+    public void setTimerCount(int timerCount) {
+        this.timerCount = timerCount;
+    }
+   
     public boolean makeMove(String action, int row, int col){
         if (action.equals("🚩")){
             if (!userBoard[row][col].isDiscovered() && !userBoard[row][col].isDoubtful()) {
@@ -182,6 +204,24 @@ public class Minesweeper {
             return true;
         } else {
             return false;
+        }
+    }
+    
+    // Método para guardar el puntaje en un archivo
+    public void saveScore(int difficulty, int seconds) {
+        // Obtener la fecha y hora actual
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDate = now.format(formatter);
+
+        // Crear la línea a escribir en el archivo
+        String line = String.format("%d,%d,%s%n", difficulty, seconds, formattedDate);
+
+        // Escribir en el archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            writer.write(line);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

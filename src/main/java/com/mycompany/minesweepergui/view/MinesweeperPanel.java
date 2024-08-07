@@ -90,8 +90,6 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     
     // Timer Difficulties
     private Timer timer = null;
-    private boolean timerStarted;
-    private int timerCount;
     
     private static final Map<Integer, Integer> DIFFICULTIES_MAX_TIME = new HashMap<>();
     static {
@@ -103,7 +101,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         DIFFICULTIES_MAX_TIME.put(LUNATIC, 99999);
     }
     private boolean showTimer;
-    private boolean useTimer;
+    private boolean useTimer = false;
     
     // Listeners
     ActionListener cmbSelectDifficultyListener;
@@ -396,14 +394,14 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                         
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             if (gameStarted) {
-                                if (!timerStarted && timer != null) {
+                                if (!game.isTimerStarted() && useTimer) {
                                     startTimer(cmbSelectDifficulty.getSelectedIndex());
                                 }
                                 if(game.makeMove("💣", square.getSquareRow(), square.getSquareCol())) {
                                     gameEndPane(false, JOptionPane.ERROR_MESSAGE);
                                 }
                             } else {
-                                if (timer != null) {
+                                if (useTimer) {
                                     startTimer(cmbSelectDifficulty.getSelectedIndex());
                                 }
                                 game.generateMines(square.getSquareRow(), square.getSquareCol());                               
@@ -411,7 +409,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                             }
                         } else if (e.getButton() == MouseEvent.BUTTON3) {
                             if (gameStarted) {
-                                if (!timerStarted && timer != null) {
+                                if (!game.isTimerStarted() && useTimer) {
                                     startTimer(cmbSelectDifficulty.getSelectedIndex());
                                 }
                                 game.makeMove("🚩", square.getSquareRow(), square.getSquareCol());
@@ -594,7 +592,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     }
     
     private void gameEndPane(boolean isWin, int msgType) {
-        if(timer != null){
+        if(useTimer){
             timer.cancel();
         }
         String[] options = {"New game","Repeat game","Examine board", "Exit"};
@@ -603,9 +601,10 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         if (isWin) {
             markedMines.setText("🚩 "+(game.getNumMines()-game.getMarkedMinesNum()));
             message = "Congratulations!";
-            if(timer != null){
-                message += "\r\nYour time was " + timerCount + " seconds.";                
-            }
+            if(useTimer){
+                message += "\r\nYour time was " + game.getTimerCount() + " seconds.";
+                game.saveScore(cmbSelectDifficulty.getSelectedIndex(), game.getTimerCount());
+            }            
         } else {
             message = "Boom!";
         }
@@ -639,15 +638,19 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private void setTimer(int difficulty) {
         
         showTimer = difficulty != EASY && difficulty != CUSTOM;
-        useTimer = difficulty != CUSTOM;
-        timerStarted = false;
         
-        if(timer != null) {
+        game.setTimerStarted(false);
+        
+        // Comprueba si la dificultada anterior tenía un timer activo
+        if(useTimer) {
             timer.cancel();
         }
         
         timerPanel.setVisible(showTimer);
- 
+        
+        // Asigna si la dificultad actual requiere timer
+        useTimer = difficulty != CUSTOM;
+        
         if (useTimer){
             resetTimerCount(difficulty);
         } else {
@@ -658,7 +661,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private void resetTimerCount(int difficulty) {
         
         timer = new Timer();
-        timerCount = 0;
+        game.setTimerCount(0);
         timerLabel.setText("⏱ " + String.format("%0" + String.valueOf(DIFFICULTIES_MAX_TIME.get(difficulty)).length() + "d", 0));
     }
     
@@ -670,6 +673,9 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         TimerTask tarea = new TimerTask() {
             @Override
             public void run() {
+                
+                int timerCount = game.getTimerCount();
+                game.setTimerCount(timerCount + 1);
                 timerCount++;
                 if (timerCount <= difficultyTime) {
                     timerLabel.setText("⏱ " + String.format("%0" + difficultyTimeDigits + "d", timerCount));
@@ -678,7 +684,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         };
         // Schedule the timer to run every second (1000 ms)
         timer.scheduleAtFixedRate(tarea, 1000, 1000);
-        timerStarted = true;
+        game.setTimerStarted(true);
     }
     
     private void setTimerPanelHideListener(){
