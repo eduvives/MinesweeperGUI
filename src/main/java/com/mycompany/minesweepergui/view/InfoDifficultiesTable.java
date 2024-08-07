@@ -18,7 +18,7 @@ import javax.swing.table.JTableHeader;
  *
  * @author Eduard
  */
-public class InfoDifficulties extends javax.swing.JDialog {
+public class InfoDifficultiesTable extends javax.swing.JDialog {
 
     private String[] difficultiesNames;
     private Integer [][] difficultiesParams;
@@ -28,7 +28,7 @@ public class InfoDifficulties extends javax.swing.JDialog {
     /**
      * Creates new form InfoDifficulties
      */
-    public InfoDifficulties(MinesweeperPanel mainPanel, String[] difficultiesNames, Integer [][] params) {
+    public InfoDifficultiesTable(MinesweeperPanel mainPanel, String[] difficultiesNames, Integer [][] params) {
         super(mainPanel, "Difficulties Information", true);
         initComponents();
         initTable();

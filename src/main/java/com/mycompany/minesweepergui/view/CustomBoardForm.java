@@ -12,7 +12,7 @@ import javax.swing.event.DocumentListener;
  *
  * @author Eduard
  */
-public class CustomBoard extends javax.swing.JDialog {
+public class CustomBoardForm extends javax.swing.JDialog {
 
     private MinesweeperPanel mainPanel;
     
@@ -38,7 +38,7 @@ public class CustomBoard extends javax.swing.JDialog {
     /**
      * Creates new form customBoard
      */
-    public CustomBoard(MinesweeperPanel mainPanel, Integer[] previousCustomBoardParams) {
+    public CustomBoardForm(MinesweeperPanel mainPanel, Integer[] previousCustomBoardParams) {
         super(mainPanel, "Create Custom Board", true);
         this.mainPanel = mainPanel;
         initComponents();

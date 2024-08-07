@@ -86,7 +86,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         { HARDCORE_ROWS, HARDCORE_COLS, HARDCORE_MINES },
         { INSANE_ROWS, INSANE_COLS, INSANE_MINES },
         { LUNATIC_ROWS, LUNATIC_COLS, LUNATIC_MINES }};
-    InfoDifficulties infoDifficultiesPanel = null;
+    InfoDifficultiesTable infoDifficultiesPanel = null;
     ScorePanel scorePanel = null;
     
     // Timer Difficulties
@@ -547,7 +547,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private void infoDifficultiesBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoDifficultiesBtnActionPerformed
         boolean isCustomBoard = cmbSelectDifficulty.getSelectedIndex() == CUSTOM;
         if (infoDifficultiesPanel == null) {
-            infoDifficultiesPanel = new InfoDifficulties(this, DIFFICULTIES_NAMES, difficultiesParams);
+            infoDifficultiesPanel = new InfoDifficultiesTable(this, DIFFICULTIES_NAMES, difficultiesParams);
             infoDifficultiesPanel.createTable(isCustomBoard);
         } else {
             if (infoDifficultiesPanel.needUpdate(isCustomBoard)) {
@@ -568,7 +568,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
 
     private void newGame(int difficulty) {
         if (difficulty == CUSTOM) {
-            CustomBoard customBoardForm = new CustomBoard(this, difficultiesParams[0]);
+            CustomBoardForm customBoardForm = new CustomBoardForm(this, difficultiesParams[0]);
             customBoardForm.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
