@@ -39,7 +39,7 @@ public class CustomBoard extends javax.swing.JDialog {
      * Creates new form customBoard
      */
     public CustomBoard(MinesweeperPanel mainPanel, Integer[] previousCustomBoardParams) {
-        super(mainPanel, "Custom Board", true);
+        super(mainPanel, "Create Custom Board", true);
         this.mainPanel = mainPanel;
         initComponents();
         rowsInfoLabel.setText("min " + MIN_ROWS + " - max " + MAX_ROWS);

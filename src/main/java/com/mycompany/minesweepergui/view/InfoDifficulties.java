@@ -28,11 +28,11 @@ public class InfoDifficulties extends javax.swing.JDialog {
     /**
      * Creates new form InfoDifficulties
      */
-    public InfoDifficulties(MinesweeperPanel mainPanel, String[] names, Integer [][] params) {
-        super(mainPanel, "Info Difficulties", true);
+    public InfoDifficulties(MinesweeperPanel mainPanel, String[] difficultiesNames, Integer [][] params) {
+        super(mainPanel, "Difficulties Information", true);
         initComponents();
         initTable();
-        difficultiesNames = names;
+        this.difficultiesNames = difficultiesNames;
         difficultiesParams = params;
         setLocationRelativeTo(null);
         setResizable(false);
@@ -183,6 +183,9 @@ public class InfoDifficulties extends javax.swing.JDialog {
         int totalHeight = (rowHeight * numRows) + headerHeight + scrollPaneInsets.top + scrollPaneInsets.bottom;
         
         infoDifficultiesScrollPane.setPreferredSize(new Dimension(450, totalHeight));
+        
+        infoDifficultiesScrollPane.revalidate();
+        infoDifficultiesScrollPane.repaint();
         this.pack();
     }
     

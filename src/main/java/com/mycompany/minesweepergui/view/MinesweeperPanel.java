@@ -87,10 +87,12 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         { INSANE_ROWS, INSANE_COLS, INSANE_MINES },
         { LUNATIC_ROWS, LUNATIC_COLS, LUNATIC_MINES }};
     InfoDifficulties infoDifficultiesPanel = null;
+    ScorePanel scorePanel = null;
     
     // Timer Difficulties
     private Timer timer = null;
     
+    private static final String[] USE_TIMER_DIFFICULTIES_NAMES = Arrays.copyOfRange(DIFFICULTIES_NAMES, 1, DIFFICULTIES_NAMES.length);;
     private static final Map<Integer, Integer> DIFFICULTIES_MAX_TIME = new HashMap<>();
     static {
         DIFFICULTIES_MAX_TIME.put(EASY, 99);
@@ -157,6 +159,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         cmbSelectDifficulty = new javax.swing.JComboBox<>();
         infoDifficultiesBtn = new javax.swing.JButton();
+        scoresBtn = new javax.swing.JButton();
         gameBoardScroll = new javax.swing.JScrollPane();
         gameBoard = new javax.swing.JPanel();
 
@@ -213,18 +216,33 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             }
         });
 
+        scoresBtn.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        scoresBtn.setText("★");
+        scoresBtn.setMargin(new java.awt.Insets(-8, -8, -8, -8));
+        scoresBtn.setPreferredSize(new java.awt.Dimension(28, 28));
+        scoresBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scoresBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(cmbSelectDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(infoDifficultiesBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(infoDifficultiesBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scoresBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(infoDifficultiesBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(infoDifficultiesBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(scoresBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(4, 4, 4)
                 .addComponent(cmbSelectDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
@@ -539,6 +557,15 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         infoDifficultiesPanel.setVisible(true);
     }//GEN-LAST:event_infoDifficultiesBtnActionPerformed
 
+    private void scoresBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoresBtnActionPerformed
+        boolean isCustomBoard = cmbSelectDifficulty.getSelectedIndex() == CUSTOM;
+        if (scorePanel == null) {
+            scorePanel = new ScorePanel(this, USE_TIMER_DIFFICULTIES_NAMES, Minesweeper.getFileName());
+        }
+        scorePanel.updateInfo();
+        scorePanel.setVisible(true);
+    }//GEN-LAST:event_scoresBtnActionPerformed
+
     private void newGame(int difficulty) {
         if (difficulty == CUSTOM) {
             CustomBoard customBoardForm = new CustomBoard(this, difficultiesParams[0]);
@@ -742,6 +769,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private javax.swing.JLabel markedMines;
     private javax.swing.JButton newBoardBtn;
     private javax.swing.JButton repeatBoardBtn;
+    private javax.swing.JButton scoresBtn;
     private javax.swing.JPanel shortMenuPanel;
     private javax.swing.JLabel timerLabel;
     private javax.swing.JPanel timerPanel;

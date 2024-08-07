@@ -104,6 +104,9 @@ public class Minesweeper {
     public void setTimerCount(int timerCount) {
         this.timerCount = timerCount;
     }
+    public static String getFileName() {
+        return FILE_NAME;
+    }
    
     public boolean makeMove(String action, int row, int col){
         if (action.equals("🚩")){
