@@ -20,8 +20,8 @@ import java.util.*;
  */
 public class Minesweeper {
     
-    private static int boardRows;
-    private static int boardCols;
+    private static int numBoardRows;
+    private static int numBardCols;
     private static int numMines;
     private int markedMinesNum;
     private int correctMarkedMinesNum;
@@ -42,8 +42,8 @@ public class Minesweeper {
     public boolean startGame (int rows, int cols, int mines, boolean repeat) {
         
         if (!repeat) {
-            boardRows = rows;
-            boardCols = cols;
+            numBoardRows = rows;
+            numBardCols = cols;
             numMines = mines;
             minesPositions.clear();
         }
@@ -57,9 +57,9 @@ public class Minesweeper {
         notDiscoveredPositions.clear();
         
         // Create a list of all possible positions within the array
-        for (int i = 0; i < boardRows; i++) {
+        for (int i = 0; i < numBoardRows; i++) {
             final int row = i;
-            for (int j = 0; j < boardCols; j++) {
+            for (int j = 0; j < numBardCols; j++) {
                 final int col = j;
                 notDiscoveredPositions.add(new int[] {i, j});
                 if (!repeat || (repeat && !minesPositions.stream().anyMatch(pos -> pos[0] == row && pos[1] == col)) ){
@@ -71,11 +71,11 @@ public class Minesweeper {
         return true;
     }
     
-    public int getBoardRows(){
-        return boardRows;
+    public int getNumBoardRows(){
+        return numBoardRows;
     }
-    public int getBoardCols(){
-        return boardCols;
+    public int getNumBardCols(){
+        return numBardCols;
     }
     public int getNumMines(){
         return numMines;
@@ -211,14 +211,14 @@ public class Minesweeper {
     }
     
     // Método para guardar el puntaje en un archivo
-    public void saveScore(int difficulty, int seconds) {
+    public void saveScore(boolean isWin, int difficulty, int seconds) {
         // Obtener la fecha y hora actual
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formattedDate = now.format(formatter);
 
         // Crear la línea a escribir en el archivo
-        String line = String.format("%d,%d,%s%n", difficulty, seconds, formattedDate);
+        String line = String.format("%b,%d,%d,%s%n", isWin, difficulty, seconds, formattedDate);
 
         // Escribir en el archivo
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
@@ -252,7 +252,7 @@ public class Minesweeper {
                 for (int y = -1; y < 2; y++) {
                     int newRow = row + i;
                     int newCol = col + y;
-                    if (newRow >= 0 && newCol >= 0 && newRow < boardRows && newCol < boardCols) {
+                    if (newRow >= 0 && newCol >= 0 && newRow < numBoardRows && newCol < numBardCols) {
                         if (minesPositions.stream().anyMatch(pos -> pos[0] == newRow && pos[1] == newCol)) {
                             numMinesAroundPos++;
                         } else if (!userBoard[newRow][newCol].isDiscovered() && !userBoard[newRow][newCol].isDoubtful()) {
@@ -319,7 +319,7 @@ public class Minesweeper {
         
         for (int i = -1; i < 2; i++) {
             for (int y = -1; y < 2; y++) {
-                if (i+row >= 0 && y+col >= 0 && i+row < boardRows && y+col < boardCols){
+                if (i+row >= 0 && y+col >= 0 && i+row < numBoardRows && y+col < numBardCols){
                     if (board[i+row][y+col]) {
                         numMinesAroundPos++;
                     } else {
@@ -385,7 +385,7 @@ public class Minesweeper {
         List<int[]> excludePositions = new ArrayList<>();
         for (int i = -1; i < 2; i++) {
             for (int y = -1; y < 2; y++) {
-                if (i+row >= 0 && y+col >= 0 && i+row < boardRows && y+col < boardCols){
+                if (i+row >= 0 && y+col >= 0 && i+row < numBoardRows && y+col < numBardCols){
                     excludePositions.add(new int[] {i+row, y+col});
                 }
             }

@@ -458,7 +458,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                             for (int y = -1; y < 2; y++) {
                                 int newRow = square.getSquareRow() + i;
                                 int newCol = square.getSquareCol()+ y;
-                                if (newRow >= 0 && newCol >= 0 && newRow < game.getBoardRows() && newCol < game.getBoardCols()){
+                                if (newRow >= 0 && newCol >= 0 && newRow < game.getNumBoardRows() && newCol < game.getNumBardCols()){
                                     if (allSquares[newRow][newCol].isMarked()) {
                                         numMinesMarkedAround++;
                                     } else if (!allSquares[newRow][newCol].isDiscovered() && !allSquares[newRow][newCol].isDoubtful()) {
@@ -537,7 +537,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     }
    
     private void repeatBoardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repeatBoardBtnActionPerformed
-        gameReady(cmbSelectDifficulty.getSelectedIndex(), new int[] {game.getBoardRows(), game.getBoardCols(), game.getNumMines()}, gameStarted);
+        gameReady(cmbSelectDifficulty.getSelectedIndex(), new int[] {game.getNumBoardRows(), game.getNumBardCols(), game.getNumMines()}, gameStarted);
     }//GEN-LAST:event_repeatBoardBtnActionPerformed
 
     private void newBoardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newBoardBtnActionPerformed
@@ -562,7 +562,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         if (scorePanel == null) {
             scorePanel = new ScorePanel(this, USE_TIMER_DIFFICULTIES_NAMES, Minesweeper.getFileName());
         }
-        scorePanel.updateInfo();
+        scorePanel.updateScorePanel();
         scorePanel.setVisible(true);
     }//GEN-LAST:event_scoresBtnActionPerformed
 
@@ -596,10 +596,10 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         game.startGame(paramsBoard[0], paramsBoard[1], paramsBoard[2], repeat);
         markedMines.setText("🚩 "+(game.getNumMines()-game.getMarkedMinesNum()));
         setTimer(difficulty);
-        gameSquares.setRows(game.getBoardRows());
-        gameSquares.setColumns(game.getBoardCols());
+        gameSquares.setRows(game.getNumBoardRows());
+        gameSquares.setColumns(game.getNumBardCols());
         removeSquaresListenerFocus();
-        allSquares = new Square[game.getBoardRows()][game.getBoardCols()];
+        allSquares = new Square[game.getNumBoardRows()][game.getNumBardCols()];
         game.setUserBoard(allSquares);
         
         for(int i=0; i<gameSquares.getRows(); i++){
@@ -621,6 +621,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private void gameEndPane(boolean isWin, int msgType) {
         if(useTimer){
             timer.cancel();
+            game.saveScore(isWin, cmbSelectDifficulty.getSelectedIndex(), game.getTimerCount());
         }
         String[] options = {"New game","Repeat game","Examine board", "Exit"};
         int selectedOption;
@@ -630,18 +631,18 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             message = "Congratulations!";
             if(useTimer){
                 message += "\r\nYour time was " + game.getTimerCount() + " seconds.";
-                game.saveScore(cmbSelectDifficulty.getSelectedIndex(), game.getTimerCount());
-            }            
+            }
         } else {
             message = "Boom!";
         }
+        
         selectedOption = JOptionPane.showOptionDialog(null, message, "", JOptionPane.DEFAULT_OPTION, msgType, null, options, options[0]);
         switch (selectedOption) {
             case 0:
                 newGame(cmbSelectDifficulty.getSelectedIndex());
                 break;
             case 1:
-                gameReady(cmbSelectDifficulty.getSelectedIndex(), new int[] {game.getBoardRows(), game.getBoardCols(), game.getNumMines()}, true);
+                gameReady(cmbSelectDifficulty.getSelectedIndex(), new int[] {game.getNumBoardRows(), game.getNumBardCols(), game.getNumMines()}, true);
                 break;
             case 3:
                 this.dispose();
