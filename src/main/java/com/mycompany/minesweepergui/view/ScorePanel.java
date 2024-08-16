@@ -345,7 +345,7 @@ public class ScorePanel extends javax.swing.JDialog {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            // Ignorar la excepción
         }
     }
     

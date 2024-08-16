@@ -224,7 +224,7 @@ public class Minesweeper {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
             writer.write(line);
         } catch (IOException e) {
-            e.printStackTrace();
+            // Ignorar la excepción
         }
     }
 

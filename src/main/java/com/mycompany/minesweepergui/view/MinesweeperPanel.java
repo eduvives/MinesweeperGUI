@@ -702,9 +702,9 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             @Override
             public void run() {
                 
-                int timerCount = game.getTimerCount();
-                game.setTimerCount(timerCount + 1);
-                timerCount++;
+                int timerCount = game.getTimerCount() + 1;
+                game.setTimerCount(timerCount);
+                
                 if (timerCount <= difficultyTime) {
                     timerLabel.setText("⏱ " + String.format("%0" + difficultyTimeDigits + "d", timerCount));
                 }
