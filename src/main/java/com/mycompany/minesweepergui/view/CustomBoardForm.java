@@ -5,6 +5,7 @@
 package com.mycompany.minesweepergui.view;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -253,9 +254,19 @@ public class CustomBoardForm extends javax.swing.JDialog {
     private void cmbMinesInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMinesInputActionPerformed
 
         if (String.valueOf(cmbMinesInput.getSelectedItem()).equals("Mines")) {
+            
+            if (isValidValue(densityNumValue) && isValidValue(rowsNumValue) && isValidValue(colsNumValue)) { 
+                 minesField.setText(String.valueOf(Math.max(MIN_MINES, Math.min(maxMines, (int) Math.round(densityNumValue * (rowsNumValue * colsNumValue) / 100)))));
+            }
             updateRangeInfoLabelsMines();
+            
         } else {
             minesInfoLabel.setText("min " + MIN_DENSITY + " - max " + MAX_DENSITY);
+            
+            if (isValidValue(minesNumValue) && isValidValue(rowsNumValue) && isValidValue(colsNumValue)) {
+                DecimalFormat df = new DecimalFormat("#.##");
+                minesField.setText(df.format((double)(minesNumValue*100)/(rowsNumValue * colsNumValue)));
+            }
             updateInfoLabelsDensity();
         }        
     }//GEN-LAST:event_cmbMinesInputActionPerformed
@@ -406,7 +417,8 @@ public class CustomBoardForm extends javax.swing.JDialog {
             minesInfoLabel.setForeground(VALID_LABEL);
         }
         
-        minesNumValue = (isValidValue(densityNumValue) && isValidValue(rowsNumValue) && isValidValue(colsNumValue)) ? (int) Math.round(densityNumValue * (rowsNumValue * colsNumValue) / 100) : null;
+        minesNumValue = (isValidValue(densityNumValue) && isValidValue(rowsNumValue) && isValidValue(colsNumValue)) ? 
+                Math.max(MIN_MINES, Math.min(maxMines, (int) Math.round(densityNumValue * (rowsNumValue * colsNumValue) / 100))) : null;
     }
     private void updateRangeInfoLabelsMines() {
         if (!isValidValue(rowsNumValue) || !isValidValue(colsNumValue)) {
