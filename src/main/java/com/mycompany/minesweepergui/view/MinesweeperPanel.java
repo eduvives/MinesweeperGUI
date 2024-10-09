@@ -132,6 +132,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         newGame(DEFAULT_DIFFICULTY);
         
         // Window
+        this.setTitle("Minesweeper Game");
         markedMines.setFont(new Font("SansSerif", Font.PLAIN, 20));
         timerLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
         timerPanel.setVisible(false);
@@ -156,7 +157,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         repeatBoardBtn = new javax.swing.JButton();
         timerPanel = new javax.swing.JPanel();
         timerLabel = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        difficultiesMenuPanel = new javax.swing.JPanel();
         cmbSelectDifficulty = new javax.swing.JComboBox<>();
         infoDifficultiesBtn = new javax.swing.JButton();
         scoresBtn = new javax.swing.JButton();
@@ -226,21 +227,21 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout difficultiesMenuPanelLayout = new javax.swing.GroupLayout(difficultiesMenuPanel);
+        difficultiesMenuPanel.setLayout(difficultiesMenuPanelLayout);
+        difficultiesMenuPanelLayout.setHorizontalGroup(
+            difficultiesMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(cmbSelectDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(difficultiesMenuPanelLayout.createSequentialGroup()
                 .addComponent(infoDifficultiesBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(scoresBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        difficultiesMenuPanelLayout.setVerticalGroup(
+            difficultiesMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(difficultiesMenuPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(difficultiesMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(infoDifficultiesBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(scoresBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(4, 4, 4)
@@ -253,7 +254,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         shortMenuPanelLayout.setHorizontalGroup(
             shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, shortMenuPanelLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(difficultiesMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(markedMines)
                 .addGap(0, 0, 0)
@@ -277,7 +278,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                         .addGroup(shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(timerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(markedMines)))))
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(difficultiesMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         gameBoardScroll.setBorder(null);
@@ -763,10 +764,10 @@ public class MinesweeperPanel extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cmbSelectDifficulty;
+    private javax.swing.JPanel difficultiesMenuPanel;
     private javax.swing.JPanel gameBoard;
     private javax.swing.JScrollPane gameBoardScroll;
     private javax.swing.JButton infoDifficultiesBtn;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel markedMines;
     private javax.swing.JButton newBoardBtn;
     private javax.swing.JButton repeatBoardBtn;
