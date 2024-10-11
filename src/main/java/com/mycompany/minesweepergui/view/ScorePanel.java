@@ -9,8 +9,13 @@ import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -27,32 +32,33 @@ import javax.swing.JLabel;
 public class ScorePanel extends javax.swing.JDialog {
     
     private String[] difficultiesNames;
-    private String fileName;
+    private static final String FILE_NAME = "minesweeper_scores.txt";
     
     // Mapas para almacenar las estadísticas
-    Map<Integer, Integer> gamesPlayedCount;
-    Map<Integer, Integer> winsCount;
-    Map<Integer, Integer> longestStreak;
-    Map<Integer, Integer> currentStreak;
-    Map<Integer, PriorityQueue<WinRecord>> bestWins;
+    private Map<Integer, Integer> gamesPlayedCount;
+    private Map<Integer, Integer> winsCount;
+    private Map<Integer, Integer> longestStreak;
+    private Map<Integer, Integer> currentStreak;
+    private Map<Integer, PriorityQueue<WinRecord>> bestWins;
     
-    ArrayList<JLabel> scoreLabels;
-    ArrayList<JLabel> dateLabels;
+    private ArrayList<JLabel> scoreLabels;
+    private ArrayList<JLabel> dateLabels;
 
     /**
      * Creates new form ScorePanel
      */
-    public ScorePanel(MinesweeperPanel mainPanel, String[] difficultiesNames, String fileName) {
+    public ScorePanel(MinesweeperPanel mainPanel, String[] difficultiesNames) {
         super(mainPanel, "Game Scores", true);
         this.difficultiesNames = difficultiesNames;
-        this.fileName = fileName;
         initComponents();
         setListenerOnClose();
+
+        getFileData();
         
         scoreLabels = new ArrayList<>(Arrays.asList(score1, score2, score3, score4, score5));
         dateLabels = new ArrayList<>(Arrays.asList(date1, date2, date3, date4, date5));
         
-        setDifficultiesListHeight();
+        setDifficultiesListHeight(); // Realiza la llamada a pack()
         setLocationRelativeTo(null);
         setResizable(false);
     }        
@@ -89,7 +95,7 @@ public class ScorePanel extends javax.swing.JDialog {
 
         difficultiesScrollPane.setPreferredSize(new java.awt.Dimension(100, 174));
 
-        difficultiesList.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        difficultiesList.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         difficultiesList.setModel(new javax.swing.AbstractListModel<String>() {
             public int getSize() { return difficultiesNames.length; }
             public String getElementAt(int i) { return difficultiesNames[i]; }
@@ -103,37 +109,37 @@ public class ScorePanel extends javax.swing.JDialog {
         });
         difficultiesScrollPane.setViewportView(difficultiesList);
 
-        bestTimesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), " Best Times ", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP, new java.awt.Font("SansSerif", 0, 14))); // NOI18N
+        bestTimesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), " Best Times ", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Segoe UI", 0, 14))); // NOI18N
         bestTimesPanel.setPreferredSize(new java.awt.Dimension(215, 176));
 
-        score1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        score1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         score1.setText("0");
 
-        score2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        score2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         score2.setText("0");
 
-        score3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        score3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         score3.setText("0");
 
-        score4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        score4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         score4.setText("0");
 
-        score5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        score5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         score5.setText("0");
 
-        date1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        date1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         date1.setText("00-00-0000");
 
-        date2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        date2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         date2.setText("00-00-0000");
 
-        date3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        date3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         date3.setText("00-00-0000");
 
-        date4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        date4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         date4.setText("00-00-0000");
 
-        date5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        date5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         date5.setText("00-00-0000");
 
         javax.swing.GroupLayout bestTimesPanelLayout = new javax.swing.GroupLayout(bestTimesPanel);
@@ -160,7 +166,7 @@ public class ScorePanel extends javax.swing.JDialog {
         bestTimesPanelLayout.setVerticalGroup(
             bestTimesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bestTimesPanelLayout.createSequentialGroup()
-                .addGap(9, 9, 9)
+                .addGap(6, 6, 6)
                 .addGroup(bestTimesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bestTimesPanelLayout.createSequentialGroup()
                         .addComponent(date1)
@@ -182,19 +188,19 @@ public class ScorePanel extends javax.swing.JDialog {
                         .addComponent(score4)
                         .addGap(8, 8, 8)
                         .addComponent(score5)))
-                .addGap(13, 13, 13))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
-        currentStreakLabel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        currentStreakLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         currentStreakLabel.setText("Current winning streak:");
 
-        winStreakLabel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        winStreakLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         winStreakLabel.setText("Longest winning streak:");
 
-        gamesWonLabel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        gamesWonLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         gamesWonLabel.setText("Games won:");
 
-        gamesPlayedLabel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        gamesPlayedLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         gamesPlayedLabel.setText("Games Played:");
 
         javax.swing.GroupLayout scoreInfoPanelLayout = new javax.swing.GroupLayout(scoreInfoPanel);
@@ -238,16 +244,15 @@ public class ScorePanel extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(difficultiesScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(bestTimesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(difficultiesScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(36, 36, 36)
-                        .addComponent(scoreInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(scoreInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(bestTimesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(16, 16, 16))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void difficultiesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_difficultiesListValueChanged
@@ -260,6 +265,14 @@ public class ScorePanel extends javax.swing.JDialog {
         }
         
     }//GEN-LAST:event_difficultiesListValueChanged
+    
+    public List<WinRecord> getBestWinsDifficultyList(int difficulty){
+        
+        List<WinRecord> bestRecords = new ArrayList<>(bestWins.get(difficulty));
+        bestRecords.sort(Comparator.comparingInt(WinRecord::getScore).thenComparing(Comparator.comparing(WinRecord::getParsedDate).reversed()));
+        
+        return bestRecords;
+    }
     
     private void setListenerOnClose(){
             this.addWindowListener(new WindowAdapter() {
@@ -285,8 +298,7 @@ public class ScorePanel extends javax.swing.JDialog {
         this.pack();
     }
     
-    public void updateScorePanel() {
-        getFileData();
+    public void resetDifficultySelection() {
         difficultiesList.setSelectedIndex(0);
     }
     
@@ -298,52 +310,79 @@ public class ScorePanel extends javax.swing.JDialog {
         currentStreak = new HashMap<>();
         bestWins = new HashMap<>();
         
+        // Comparador que ordena según el valor de score y, en caso de empate, por fecha
+        Comparator<WinRecord> comparator = Comparator.comparingInt(WinRecord::getScore).reversed().thenComparing(WinRecord::getParsedDate);
+        
         // Inicializar los mapas para cada nivel de dificultad
         for (int i = 1; i <= difficultiesNames.length; i++) {
             gamesPlayedCount.put(i, 0);
             winsCount.put(i, 0);
             longestStreak.put(i, 0);
             currentStreak.put(i, 0);
-            bestWins.put(i, new PriorityQueue<>(5, Comparator.comparingInt(WinRecord::getScore).reversed()));
+            bestWins.put(i, new PriorityQueue<>(5, comparator));
         }
         
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             
-            int currentDifficultyStreak;
-            int longestDifficulStreak;
+            String line;
                     
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(":");
 
                 boolean isWin = Boolean.parseBoolean(parts[0]);
                 int difficulty = Integer.parseInt(parts[1]);
                 int score = Integer.parseInt(parts[2]);
                 String date = parts[3];                
                 
-                gamesPlayedCount.put(difficulty, gamesPlayedCount.get(difficulty) + 1);
-                        
-                currentDifficultyStreak = currentStreak.get(difficulty);
-                longestDifficulStreak = longestStreak.get(difficulty);
-                    
-                if (isWin) {
-                    winsCount.put(difficulty, winsCount.get(difficulty) + 1);
-
-                    PriorityQueue<WinRecord> pq = bestWins.get(difficulty);
-                    pq.offer(new WinRecord(score, date));
-                    if (pq.size() > 5) {
-                        pq.poll();
-                    }
-                    
-                    currentDifficultyStreak += 1;
-                    currentStreak.put(difficulty, currentDifficultyStreak);
-                    longestStreak.put(difficulty, Math.max(longestDifficulStreak, currentDifficultyStreak));                    
-                } else {
-                    longestStreak.put(difficulty, Math.max(longestDifficulStreak, currentDifficultyStreak));                        
-                    currentStreak.put(difficulty, 0);
-                }
+                updateScoreStatistics(isWin, difficulty, score, date);
             }
 
+        } catch (IOException e) {
+            // Ignorar la excepción
+        }
+    }
+    
+    private void updateScoreStatistics(boolean isWin, int difficulty, int score, String date) {
+        
+        gamesPlayedCount.put(difficulty, gamesPlayedCount.get(difficulty) + 1);
+
+        int currentDifficultyStreak = currentStreak.get(difficulty);
+        int longestDifficulStreak = longestStreak.get(difficulty);
+
+        if (isWin) {
+            winsCount.put(difficulty, winsCount.get(difficulty) + 1);
+
+            PriorityQueue<WinRecord> pq = bestWins.get(difficulty);
+            pq.offer(new WinRecord(score, date));
+            if (pq.size() > 5) {
+                pq.poll();
+            }
+
+            currentDifficultyStreak += 1;
+            currentStreak.put(difficulty, currentDifficultyStreak);
+            longestStreak.put(difficulty, Math.max(longestDifficulStreak, currentDifficultyStreak));                    
+        } else {
+            longestStreak.put(difficulty, Math.max(longestDifficulStreak, currentDifficultyStreak));                        
+            currentStreak.put(difficulty, 0);
+        }
+    }
+    
+    // Método para guardar el puntaje
+    public void saveScore(boolean isWin, int difficulty, int seconds) {
+        // Obtener la fecha y hora actual
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDate = now.format(formatter);
+
+        // Crear la línea a escribir en el archivo
+        String line = String.format("%b:%d:%d:%s%n", isWin, difficulty, seconds, formattedDate);
+        
+        // Actualizar las estadisticas para que los valores almacenados en los atributos sean validos tras cada partida
+        updateScoreStatistics(isWin, difficulty, seconds, formattedDate);
+        
+        // Escribir el puntaje en el archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            writer.write(line);
         } catch (IOException e) {
             // Ignorar la excepción
         }
@@ -355,9 +394,7 @@ public class ScorePanel extends javax.swing.JDialog {
         winStreakLabel.setText("Longest winning streak: " + longestStreak.get(difficulty));
         currentStreakLabel.setText("Current winning streak: " + currentStreak.get(difficulty));
         
-        PriorityQueue<WinRecord> bestWinsDifficulty = bestWins.get(difficulty);
-        List<WinRecord> bestRecords = new ArrayList<>(bestWinsDifficulty);
-        bestRecords.sort(Comparator.comparingInt(WinRecord::getScore));
+        List<WinRecord> bestRecords = getBestWinsDifficultyList(difficulty);
         
         for (int i = 0; i < 5; i++) {
             if (i < bestRecords.size()) {
@@ -371,10 +408,9 @@ public class ScorePanel extends javax.swing.JDialog {
         }
         bestTimesPanel.revalidate();
         bestTimesPanel.repaint();
-        this.pack();        
     }
     
-    class WinRecord {
+    public class WinRecord {
         private final int score;
         private final String date;
 
@@ -389,6 +425,11 @@ public class ScorePanel extends javax.swing.JDialog {
 
         public String getDate() {
             return date;
+        }
+        
+        public LocalDate getParsedDate() {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            return LocalDate.parse(date, formatter);
         }
     }
     

@@ -5,8 +5,7 @@
     <Property name="defaultCloseOperation" type="int" value="2"/>
   </Properties>
   <SyntheticProperties>
-    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -40,14 +39,15 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="difficultiesScrollPane" min="-2" max="-2" attributes="0"/>
-                          <Component id="bestTimesPanel" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="difficultiesScrollPane" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
                       <Component id="scoreInfoPanel" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                      <Component id="bestTimesPanel" min="-2" pref="178" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
@@ -71,7 +71,7 @@
         <Component class="javax.swing.JList" name="difficultiesList">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="new javax.swing.AbstractListModel&lt;String&gt;() {&#xd;&#xa;            public int getSize() { return difficultiesNames.length; }&#xd;&#xa;            public String getElementAt(int i) { return difficultiesNames[i]; }&#xd;&#xa;        }" type="code"/>
@@ -96,7 +96,7 @@
               <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                 <EtchetBorder/>
               </Border>
-              <Font PropertyName="font" name="SansSerif" size="14" style="0"/>
+              <Font PropertyName="font" name="Segoe UI" size="14" style="0"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -132,7 +132,7 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="date1" min="-2" max="-2" attributes="0"/>
@@ -157,7 +157,7 @@
                           <Component id="score5" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                  <EmptySpace pref="12" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -166,7 +166,7 @@
         <Component class="javax.swing.JLabel" name="score1">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="0"/>
           </Properties>
@@ -174,7 +174,7 @@
         <Component class="javax.swing.JLabel" name="score2">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="0"/>
           </Properties>
@@ -182,7 +182,7 @@
         <Component class="javax.swing.JLabel" name="score3">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="0"/>
           </Properties>
@@ -190,7 +190,7 @@
         <Component class="javax.swing.JLabel" name="score4">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="0"/>
           </Properties>
@@ -198,7 +198,7 @@
         <Component class="javax.swing.JLabel" name="score5">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="0"/>
           </Properties>
@@ -206,7 +206,7 @@
         <Component class="javax.swing.JLabel" name="date1">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="00-00-0000"/>
           </Properties>
@@ -214,7 +214,7 @@
         <Component class="javax.swing.JLabel" name="date2">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="00-00-0000"/>
           </Properties>
@@ -222,7 +222,7 @@
         <Component class="javax.swing.JLabel" name="date3">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="00-00-0000"/>
           </Properties>
@@ -230,7 +230,7 @@
         <Component class="javax.swing.JLabel" name="date4">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="00-00-0000"/>
           </Properties>
@@ -238,7 +238,7 @@
         <Component class="javax.swing.JLabel" name="date5">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="00-00-0000"/>
           </Properties>
@@ -276,7 +276,7 @@
         <Component class="javax.swing.JLabel" name="currentStreakLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Current winning streak:"/>
           </Properties>
@@ -284,7 +284,7 @@
         <Component class="javax.swing.JLabel" name="winStreakLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Longest winning streak:"/>
           </Properties>
@@ -292,7 +292,7 @@
         <Component class="javax.swing.JLabel" name="gamesWonLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Games won:"/>
           </Properties>
@@ -300,7 +300,7 @@
         <Component class="javax.swing.JLabel" name="gamesPlayedLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="SansSerif" size="14" style="0"/>
+              <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Games Played:"/>
           </Properties>

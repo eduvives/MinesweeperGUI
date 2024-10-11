@@ -31,9 +31,11 @@ public class InfoDifficultiesTable extends javax.swing.JDialog {
     public InfoDifficultiesTable(MinesweeperPanel mainPanel, String[] difficultiesNames, Integer [][] params) {
         super(mainPanel, "Difficulties Information", true);
         initComponents();
-        initTable();
+        
         this.difficultiesNames = difficultiesNames;
         difficultiesParams = params;
+        initTable();
+        
         setLocationRelativeTo(null);
         setResizable(false);
     }
@@ -52,7 +54,7 @@ public class InfoDifficultiesTable extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        infoDifficultiesTable.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        infoDifficultiesTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         infoDifficultiesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -104,8 +106,6 @@ public class InfoDifficultiesTable extends javax.swing.JDialog {
                 .addComponent(infoDifficultiesScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void initTable() {
@@ -113,7 +113,7 @@ public class InfoDifficultiesTable extends javax.swing.JDialog {
         infoDifficultiesTable.setRowSelectionAllowed(false);
         
         JTableHeader tableHeader = infoDifficultiesTable.getTableHeader();
-        tableHeader.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        tableHeader.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tableHeader.setPreferredSize(new Dimension(tableHeader.getPreferredSize().width, 30));
         
         DefaultTableCellRenderer leftAlignRenderer = new DefaultTableCellRenderer();
@@ -122,11 +122,13 @@ public class InfoDifficultiesTable extends javax.swing.JDialog {
         for (int i = 0; i < infoDifficultiesTable.getColumnCount(); i++) {
             infoDifficultiesTable.getColumnModel().getColumn(i).setCellRenderer(leftAlignRenderer);
         }
+        
+        createTable();
     }
     
-    public void createTable(boolean isCustomBoard) {
+    public void createTable() {
         infoDifficultiesTableModel = (DefaultTableModel) infoDifficultiesTable.getModel();
-        for (int i = isCustomBoard ? 0 : 1; i < difficultiesNames.length; i++) {
+        for (int i = 1; i < difficultiesNames.length; i++) {
             Object[] newRow = { difficultiesNames[i], 
                                 difficultiesParams[i][0]+"×"+difficultiesParams[i][1], 
                                 difficultiesParams[i][0]*difficultiesParams[i][1], 
@@ -135,17 +137,6 @@ public class InfoDifficultiesTable extends javax.swing.JDialog {
             // Add the row to the model
             infoDifficultiesTableModel.addRow(newRow);
         }
-        if (isCustomBoard) {
-            customDifficultyRowParams = Arrays.copyOf(difficultiesParams[0], difficultiesParams[0].length);
-        }
-        
-        /*
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(infoDifficultiesTableModel);
-        for (int i = 0; i < infoDifficultiesTableModel.getColumnCount(); i++) {
-            sorter.setSortable(i, (i >= 2));
-        }
-        infoDifficultiesTable.setRowSorter(sorter);
-        */
         
         updateTableHeight();
     }

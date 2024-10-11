@@ -5,6 +5,7 @@
 package com.mycompany.minesweepergui.view;
 
 import com.mycompany.minesweepergui.model.Minesweeper;
+import com.mycompany.minesweepergui.view.ScorePanel.WinRecord;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -26,6 +27,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
+import javax.swing.UIManager;
 
 /**
  *
@@ -78,6 +80,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     private static final int LUNATIC_ROWS = 100;
     private static final int LUNATIC_COLS = 100;
     private static final int LUNATIC_MINES = 2000;
+    
     private Integer [][] difficultiesParams = {
         null,
         { EASY_ROWS, EASY_COLS, EASY_MINES },
@@ -86,8 +89,9 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         { HARDCORE_ROWS, HARDCORE_COLS, HARDCORE_MINES },
         { INSANE_ROWS, INSANE_COLS, INSANE_MINES },
         { LUNATIC_ROWS, LUNATIC_COLS, LUNATIC_MINES }};
-    InfoDifficultiesTable infoDifficultiesPanel = null;
-    ScorePanel scorePanel = null;
+    
+    InfoDifficultiesTable infoDifficultiesPanel;
+    ScorePanel scorePanel;
     
     // Timer Difficulties
     private Timer timer = null;
@@ -127,19 +131,19 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         gameBoardScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_UNIT_INCREMENT);
         gameBoardScroll.getHorizontalScrollBar().setUnitIncrement(SCROLL_UNIT_INCREMENT);
         
-        // Game
-        previousDifficulty = DEFAULT_DIFFICULTY;
-        newGame(DEFAULT_DIFFICULTY);
-        
         // Window
-        this.setTitle("Minesweeper Game");
-        markedMines.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        timerLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        setViewFont();
         timerPanel.setVisible(false);
         setTimerPanelHideListener();
-        setLocationRelativeTo(null);
-        setResizable(false);
-        getContentPane().requestFocusInWindow();
+        
+        // Game
+        initializeFeaturePanels();
+        previousDifficulty = -1;
+        newGame(DEFAULT_DIFFICULTY);
+        
+        this.setTitle("Minesweeper Game");
+        this.setResizable(false);
+        this.getContentPane().requestFocusInWindow();
     }
 
     /**
@@ -171,14 +175,18 @@ public class MinesweeperPanel extends javax.swing.JFrame {
 
         markedMines.setText("🚩 0");
 
+        newBoardBtn.setFont(new java.awt.Font("Segoe UI", 0, 13));
         newBoardBtn.setText("New Game");
+        newBoardBtn.setMargin(new java.awt.Insets(0, -2, 0, -2));
         newBoardBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newBoardBtnActionPerformed(evt);
             }
         });
 
+        repeatBoardBtn.setFont(new java.awt.Font("Segoe UI", 0, 13));
         repeatBoardBtn.setText("Repeat Game");
+        repeatBoardBtn.setMargin(new java.awt.Insets(0, -2, 0, -2));
         repeatBoardBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 repeatBoardBtnActionPerformed(evt);
@@ -204,12 +212,13 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        cmbSelectDifficulty.setFont(new java.awt.Font("Segoe UI", 0, 13));
         cmbSelectDifficulty.setModel(new DefaultComboBoxModel<>(DIFFICULTIES_NAMES));
         cmbSelectDifficulty.setSelectedIndex(DEFAULT_DIFFICULTY);
 
-        infoDifficultiesBtn.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        infoDifficultiesBtn.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         infoDifficultiesBtn.setText("𝐢");
-        infoDifficultiesBtn.setMargin(new java.awt.Insets(-3, -3, -3, -3));
+        infoDifficultiesBtn.setMargin(new java.awt.Insets(-4, -4, -2, -4));
         infoDifficultiesBtn.setPreferredSize(new java.awt.Dimension(28, 28));
         infoDifficultiesBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -217,9 +226,9 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             }
         });
 
-        scoresBtn.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        scoresBtn.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         scoresBtn.setText("★");
-        scoresBtn.setMargin(new java.awt.Insets(-8, -8, -8, -8));
+        scoresBtn.setMargin(new java.awt.Insets(-8, -8, -6, -8));
         scoresBtn.setPreferredSize(new java.awt.Dimension(28, 28));
         scoresBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -274,7 +283,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(repeatBoardBtn))
                     .addGroup(shortMenuPanelLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
+                        .addGap(20, 20, 20)
                         .addGroup(shortMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(timerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(markedMines)))))
@@ -296,7 +305,7 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         );
         gameBoardLayout.setVerticalGroup(
             gameBoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 348, Short.MAX_VALUE)
+            .addGap(0, 357, Short.MAX_VALUE)
         );
 
         gameBoardScroll.setViewportView(gameBoard);
@@ -320,9 +329,22 @@ public class MinesweeperPanel extends javax.swing.JFrame {
                 .addComponent(gameBoardScroll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(31, 31, 31))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void setViewFont() {
+        
+        Font optionPaneFont = new Font("Segoe UI", 0, 13); // Cambiar fuente de los mensajes y botones de JOptionPane
+        UIManager.put("OptionPane.messageFont", optionPaneFont);
+        UIManager.put("OptionPane.buttonFont", optionPaneFont);
+        
+        markedMines.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        timerLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
+    }
+    
+    private void initializeFeaturePanels() {
+        scorePanel = new ScorePanel(this, USE_TIMER_DIFFICULTIES_NAMES);
+        infoDifficultiesPanel = new InfoDifficultiesTable(this, DIFFICULTIES_NAMES, difficultiesParams);
+    }
     
     private void setCmbSelectDifficultyListener() {
         cmbSelectDifficultyListener = new ActionListener() {
@@ -546,24 +568,17 @@ public class MinesweeperPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_newBoardBtnActionPerformed
 
     private void infoDifficultiesBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoDifficultiesBtnActionPerformed
+        
         boolean isCustomBoard = cmbSelectDifficulty.getSelectedIndex() == CUSTOM;
-        if (infoDifficultiesPanel == null) {
-            infoDifficultiesPanel = new InfoDifficultiesTable(this, DIFFICULTIES_NAMES, difficultiesParams);
-            infoDifficultiesPanel.createTable(isCustomBoard);
-        } else {
-            if (infoDifficultiesPanel.needUpdate(isCustomBoard)) {
-                infoDifficultiesPanel.updateTable(isCustomBoard);
-            }
+        
+        if (infoDifficultiesPanel.needUpdate(isCustomBoard)) {
+            infoDifficultiesPanel.updateTable(isCustomBoard);
         }
         infoDifficultiesPanel.setVisible(true);
     }//GEN-LAST:event_infoDifficultiesBtnActionPerformed
 
     private void scoresBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoresBtnActionPerformed
-        boolean isCustomBoard = cmbSelectDifficulty.getSelectedIndex() == CUSTOM;
-        if (scorePanel == null) {
-            scorePanel = new ScorePanel(this, USE_TIMER_DIFFICULTIES_NAMES, Minesweeper.getFileName());
-        }
-        scorePanel.updateScorePanel();
+        scorePanel.resetDifficultySelection();
         scorePanel.setVisible(true);
     }//GEN-LAST:event_scoresBtnActionPerformed
 
@@ -581,14 +596,27 @@ public class MinesweeperPanel extends javax.swing.JFrame {
             customBoardForm.setVisible(true);
         } else {
             gameReady(difficulty, getParamsBoard(difficulty), false);
+            updateWindowPosition(previousDifficulty != -1 ? difficultiesParams[previousDifficulty] : null, difficultiesParams[difficulty]);
             previousDifficulty = difficulty;
         }
     }
     
     public void newCustomGame(int[] paramsBoard) {
-        difficultiesParams[0] = Arrays.stream(paramsBoard).boxed().toArray(Integer[]::new);
-        previousDifficulty = CUSTOM;
+        
         gameReady(CUSTOM, paramsBoard, false);
+        
+        Integer[] customDifficultyParams = Arrays.stream(paramsBoard).boxed().toArray(Integer[]::new);
+        
+        updateWindowPosition(difficultiesParams[previousDifficulty], customDifficultyParams);
+        difficultiesParams[0] = customDifficultyParams;
+        previousDifficulty = CUSTOM;
+    }
+    
+    private void updateWindowPosition(Integer[] previousDifficultyParams, Integer[] difficultyParams) {
+        if (previousDifficultyParams == null || !previousDifficultyParams[0].equals(difficultyParams[0]) || !previousDifficultyParams[1].equals(difficultyParams[1])) {
+            this.pack();
+            this.setLocationRelativeTo(null);
+        }
     }
     
     private void gameReady(int difficulty, int[] paramsBoard, boolean repeat) {
@@ -615,35 +643,49 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         int horizontalSize = (paramsBoard[0]*SQUARE_SIZE > MAX_VERTICAL_SCROLL) ? paramsBoard[1]*SQUARE_SIZE + VERTICAL_SCROLL_WIDTH : paramsBoard[1]*SQUARE_SIZE;
         int verticalSize = (paramsBoard[1]*SQUARE_SIZE > MAX_HORIZONTAL_SCROLL) ? paramsBoard[0]*SQUARE_SIZE + HORIZONTA_SCROLL_HEIGHT : paramsBoard[0]*SQUARE_SIZE;
         gameBoardScroll.setPreferredSize(new Dimension(Math.min(horizontalSize, MAX_HORIZONTAL_SCROLL), Math.min(verticalSize, MAX_VERTICAL_SCROLL)));
-        this.pack();
-        this.setVisible(true);
     }
     
     private void gameEndPane(boolean isWin, int msgType) {
+        
+        int difficulty = cmbSelectDifficulty.getSelectedIndex();
+        int score = game.getTimerCount();
+        
         if(useTimer){
             timer.cancel();
-            game.saveScore(isWin, cmbSelectDifficulty.getSelectedIndex(), game.getTimerCount());
+            scorePanel.saveScore(isWin, difficulty, score);
         }
+        
         String[] options = {"New game","Repeat game","Examine board", "Exit"};
         int selectedOption;
         String message;
+        
         if (isWin) {
             markedMines.setText("🚩 "+(game.getNumMines()-game.getMarkedMinesNum()));
-            message = "Congratulations!";
+            message = "Congratulations! You found all the bombs.";
+            
             if(useTimer){
-                message += "\r\nYour time was " + game.getTimerCount() + " seconds.";
+                message += "\r\nYour time was " + score + " seconds.";
+                
+                List<WinRecord> bestRecords = scorePanel.getBestWinsDifficultyList(difficulty);
+                
+                if (score == bestRecords.get(0).getScore()) {
+                    message += "\r\nIt is the fastest time for this difficulty level!";
+                } else if (score <= bestRecords.get(bestRecords.size() - 1).getScore()) {
+                    message += "\r\nIt is one of the top 5 times!";
+                }
             }
+            
         } else {
-            message = "Boom!";
+            message = "Boom!" + "\r\nYou lost this game, better luck next time.";
         }
         
         selectedOption = JOptionPane.showOptionDialog(null, message, "", JOptionPane.DEFAULT_OPTION, msgType, null, options, options[0]);
         switch (selectedOption) {
             case 0:
-                newGame(cmbSelectDifficulty.getSelectedIndex());
+                newGame(difficulty);
                 break;
             case 1:
-                gameReady(cmbSelectDifficulty.getSelectedIndex(), new int[] {game.getNumBoardRows(), game.getNumBardCols(), game.getNumMines()}, true);
+                gameReady(difficulty, new int[] {game.getNumBoardRows(), game.getNumBardCols(), game.getNumMines()}, true);
                 break;
             case 3:
                 this.dispose();
