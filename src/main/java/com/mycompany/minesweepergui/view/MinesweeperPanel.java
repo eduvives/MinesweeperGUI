@@ -142,6 +142,9 @@ public class MinesweeperPanel extends javax.swing.JFrame {
         newGame(DEFAULT_DIFFICULTY);
         
         this.setTitle("Minesweeper Game");
+        this.setIconImage(new javax.swing.ImageIcon(
+            getClass().getResource("/minesweeper-icon.png")
+        ).getImage());
         this.setResizable(false);
         this.getContentPane().requestFocusInWindow();
     }
